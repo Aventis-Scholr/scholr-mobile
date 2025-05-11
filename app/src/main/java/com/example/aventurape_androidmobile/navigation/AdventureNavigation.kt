@@ -30,6 +30,8 @@ import com.example.aventurape_androidmobile.domains.entrepreneur_publication.scr
 import com.example.aventurape_androidmobile.domains.entrepreneur_publication.viewModels.ProfileViewModelE
 import com.example.aventurape_androidmobile.shared.screens.ErrorScreen
 import com.example.aventurape_androidmobile.domains.authentication.screens.CompanySelectionScreen
+import com.example.aventurape_androidmobile.domains.applications.screens.HomeApplicationsScreen
+import com.example.aventurape_androidmobile.domains.applications.viewModels.HomeApplicationsViewModel
 
 @Composable
 fun AdventurerNavigation(navController: NavHostController, context: Context) {
@@ -38,6 +40,9 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
     val profileViewModelA: ProfileViewModelA = viewModel()
     val profileViewModelE: ProfileViewModelE = viewModel()
     val homeAdventurerViewModel: HomeAdventurerViewModel = viewModel()
+
+    val homeApplicationsViewModel: HomeApplicationsViewModel = viewModel()
+
     var userRole = PreferenceManager.getUserRoles(context);
     val username = PreferenceManager.getUsername(context)
     val aventurateViewModel: AventurateViewModel = viewModel()
@@ -64,6 +69,23 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
         composable(NavScreenAdventurer.signup_screen.name) {
             SignUpScreen(viewModel = signUpViewModel, navController = navController)
         }
+
+        //-----------------------------
+        //Apoderado screens
+
+
+        composable(NavScreenAdventurer.bandeja_apoderado_screen.name) { //HOME
+            if (userRole != null && userRole!!.contains(Roles.ROLE_APODERADO.name)) {
+                HomeApplicationsScreen(viewModel = homeApplicationsViewModel, navController = navController)
+            } else {
+                // Handle unauthorized access or redirect
+                navController.navigate(NavScreenAdventurer.error_screen.name)
+            }
+        }
+
+
+        //------------------------------
+
 
         //aventurero screens
 

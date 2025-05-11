@@ -5,6 +5,7 @@ import com.example.aventurape_androidmobile.utils.models.PublicationRequest
 import com.example.aventurape_androidmobile.utils.models.PublicationResponse
 import com.example.aventurape_androidmobile.domains.adventurer.models.Comment
 import com.example.aventurape_androidmobile.domains.adventurer.models.Review
+import com.example.aventurape_androidmobile.domains.applications.models.Application
 import com.example.aventurape_androidmobile.domains.entrepreneur_publication.models.ProfileE
 import com.example.aventurape_androidmobile.utils.models.FavoritePublicationRequest
 import com.example.aventurape_androidmobile.utils.models.FavoritePublicationResponse
@@ -42,8 +43,15 @@ interface Placeholder {
         @Path("publicationId") publicationId: Long,
         @Body review: Review
     ): Response<Void>
+    //--------------
+    //APPLICATIONS
+
+    //get all applications
+    @GET("applications")
+    suspend fun getAllApplications(): Response<List<Application>>
 
 
+    //----------
     @GET("publication/{publicationId}/comments")
     suspend fun getComments(
         @Path("publicationId") publicationId: Long
