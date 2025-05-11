@@ -167,12 +167,15 @@ fun LogInScreen(viewModel: LoginViewModel, navController: NavHostController) {
                                     Log.d("SharedPreferences", PreferenceManager.getAllPreferences(context).toString())
 
                                     when {
-                                        userRole != null && userRole.contains(Roles.ROLE_ADVENTUROUS.name) -> {
-                                            navController.navigate(NavScreenAdventurer.home_adventurer_screen.name)
+                                        userRole != null && userRole.contains(Roles.ROLE_APODERADO.name) -> {
+                                            navController.navigate(NavScreenAdventurer.bandeja_apoderado_screen.name)
                                         }
+                                        /*
+                                        para otro rol
+
                                         userRole != null && userRole.contains(Roles.ROLE_ENTREPRENEUR.name) -> {
                                             navController.navigate(NavScreenAdventurer.adventure_publication_management.name)
-                                        }
+                                        }*/
                                         else -> {
                                             navController.navigate(NavScreenAdventurer.error_screen.name)
                                         }

@@ -5,6 +5,8 @@ import com.example.aventurape_androidmobile.utils.models.PublicationRequest
 import com.example.aventurape_androidmobile.utils.models.PublicationResponse
 import com.example.aventurape_androidmobile.domains.adventurer.models.Comment
 import com.example.aventurape_androidmobile.domains.adventurer.models.Review
+import com.example.aventurape_androidmobile.domains.applications.models.Application
+import com.example.aventurape_androidmobile.domains.applications.models.DataApoderado
 import com.example.aventurape_androidmobile.domains.entrepreneur_publication.models.ProfileE
 import com.example.aventurape_androidmobile.utils.models.FavoritePublicationRequest
 import com.example.aventurape_androidmobile.utils.models.FavoritePublicationResponse
@@ -42,8 +44,34 @@ interface Placeholder {
         @Path("publicationId") publicationId: Long,
         @Body review: Review
     ): Response<Void>
+    //--------------
+    //APPLICATIONS
 
+    //get all applications
+    @GET("applications")
+    suspend fun getAllApplications(): Response<List<Application>>
 
+    //get data apdoerado por id de apoderado y id de data
+    @GET("data-apoderado/{apoderadoId}/{id}")
+    suspend fun getDataApoderadoByApoderadoIdAndId(
+        @Path("apoderadoId") apoderadoId: Long,
+        @Path("id") id: Long
+    ): Response<Application>
+
+    //crear data appoderado
+    @POST("data-apoderado/{apoderadoId}")
+    suspend fun createDataApoderado(
+        @Path("apoderadoId") apoderadoId: Long,
+        @Body dataApoderado: DataApoderado
+    ): Response<Void>
+
+    //get data apoderado by apoderado id
+    @GET("data-apoderado/{apoderadoId}")
+    suspend fun getDataApoderadoByApoderadoId(
+        @Path("apoderadoId") apoderadoId: Long
+    ): Response<DataApoderado>
+
+    //---------------------------------
     @GET("publication/{publicationId}/comments")
     suspend fun getComments(
         @Path("publicationId") publicationId: Long

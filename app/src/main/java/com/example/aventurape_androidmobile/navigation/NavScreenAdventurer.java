@@ -9,6 +9,18 @@ public enum NavScreenAdventurer {
     select_role_screen,
     signup_screen,
 
+    //----------------
+    //apoderado
+
+    bandeja_apoderado_screen,
+
+    select_postulacion_screen,
+    data_apoderado_form_screen,
+
+    //--------------
+
+
+
     //adveturer
     home_adventurer_screen,
     adventure_screen,
