@@ -14,6 +14,9 @@ public enum NavScreenAdventurer {
 
     bandeja_apoderado_screen,
 
+    select_postulacion_screen,
+    data_apoderado_form_screen,
+
     //--------------
 
 

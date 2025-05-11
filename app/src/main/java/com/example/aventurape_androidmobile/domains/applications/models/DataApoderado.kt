@@ -1,7 +1,7 @@
 package com.example.aventurape_androidmobile.domains.applications.models;
 
 public class DataApoderado (
-    val Id: Long,
+    //val Id: Long,
     val apoderadoId: Long,
     val nombres: String,
     val apellidos: String,

@@ -69,7 +69,7 @@ fun HomeApplicationsScreen(viewModel: HomeApplicationsViewModel, navController: 
                     .fillMaxSize()
             ) {
                 FloatingActionButton(
-                    onClick = { /* Acción del botón */ },
+                    onClick = { navController.navigate("select_postulacion_screen") },
                     modifier = Modifier
                         .align(Alignment.BottomCenter) // Alineación aplicada al contenedor
                         .padding(16.dp)
