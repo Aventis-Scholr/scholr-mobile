@@ -8,6 +8,7 @@ import com.example.aventurape_androidmobile.domains.adventurer.models.Review
 import com.example.aventurape_androidmobile.domains.applications.models.Application
 import com.example.aventurape_androidmobile.domains.applications.models.DataApoderado
 import com.example.aventurape_androidmobile.domains.entrepreneur_publication.models.ProfileE
+import com.example.aventurape_androidmobile.domains.management.models.Scholarship
 import com.example.aventurape_androidmobile.utils.models.FavoritePublicationRequest
 import com.example.aventurape_androidmobile.utils.models.FavoritePublicationResponse
 import com.example.aventurape_androidmobile.utils.models.PublicationByOrderResponse
@@ -70,6 +71,15 @@ interface Placeholder {
     suspend fun getDataApoderadoByApoderadoId(
         @Path("apoderadoId") apoderadoId: Long
     ): Response<DataApoderado>
+    //--------------- SCHOLARSHIPS ------------------
+    @GET("scholarships")
+    suspend fun getAllScholarships(): Response<List<Scholarship>>
+
+    //get scholarship by companyName
+    @GET("scholarships/{companyName}")
+    suspend fun getScholarshipsByCompanyName(
+        @Path("companyName") companyName: String
+    ): Response<List<Scholarship>>
 
     //---------------------------------
     @GET("publication/{publicationId}/comments")

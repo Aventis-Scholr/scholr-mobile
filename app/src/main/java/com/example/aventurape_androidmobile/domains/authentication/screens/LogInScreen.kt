@@ -94,165 +94,214 @@ fun LogInScreen(viewModel: LoginViewModel, navController: NavHostController) {
             }
 
 
-                Column(
+            Column(
+                modifier = Modifier
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "¡Bienvenido!",
+                    fontFamily = cabinFamily,
+                    fontSize = 16.sp,
+                    color = TextSecondaryColor
+                )
+                Text(
+                    text = "Iniciar Sesión",
+                    fontFamily = cabinFamily,
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = TextPrimaryColor,
+                    modifier = Modifier.padding(bottom = 24.dp)
+                )
+
+                OutlinedTextField(
+                    value = state.username,
+                    onValueChange = { viewModel.inputCredentials(it, state.password) },
+                    label = { Text("Usuario") },
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = PrimaryBrown,
+                        focusedLabelColor = PrimaryBrown,
+                        cursorColor = PrimaryBrown
+                    ),
                     modifier = Modifier
-                        .padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "¡Bienvenido!",
-                        fontFamily = cabinFamily,
-                        fontSize = 16.sp,
-                        color = TextSecondaryColor
-                    )
-                    Text(
-                        text = "Iniciar Sesión",
-                        fontFamily = cabinFamily,
-                        fontSize = 32.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = TextPrimaryColor,
-                        modifier = Modifier.padding(bottom = 24.dp)
-                    )
+                        .fillMaxWidth()
+                        .focusRequester(currentFocusRequester),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(onNext = {
+                        focusManager.moveFocus(FocusDirection.Down)
+                    })
+                )
 
-                    OutlinedTextField(
-                        value = state.username,
-                        onValueChange = { viewModel.inputCredentials(it, state.password) },
-                        label = { Text("Usuario") },
-                        singleLine = true,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = PrimaryBrown,
-                            focusedLabelColor = PrimaryBrown,
-                            cursorColor = PrimaryBrown
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(currentFocusRequester),
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                        keyboardActions = KeyboardActions(onNext = {
-                            focusManager.moveFocus(FocusDirection.Down)
-                        })
-                    )
+                Spacer(modifier = Modifier.height(16.dp))
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                OutlinedTextField(
+                    value = state.password,
+                    onValueChange = { viewModel.inputCredentials(state.username, it) },
+                    label = { Text("Contraseña") },
+                    visualTransformation = PasswordVisualTransformation(),
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = PrimaryBrown,
+                        focusedLabelColor = PrimaryBrown,
+                        cursorColor = PrimaryBrown
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(nextFocusRequester),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = {
+                        keyboardController?.hide()
+                    })
+                )
 
-                    OutlinedTextField(
-                        value = state.password,
-                        onValueChange = { viewModel.inputCredentials(state.username, it) },
-                        label = { Text("Contraseña") },
-                        visualTransformation = PasswordVisualTransformation(),
-                        singleLine = true,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = PrimaryBrown,
-                            focusedLabelColor = PrimaryBrown,
-                            cursorColor = PrimaryBrown
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(nextFocusRequester),
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                        keyboardActions = KeyboardActions(onDone = {
-                            keyboardController?.hide()
-                        })
-                    )
+                Spacer(modifier = Modifier.height(24.dp))
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                Button(
+                    onClick = {
+                        viewModel.viewModelScope.launch {
+                            viewModel.signInUser(context, state.username, state.password)
+                            if (state.loginSuccess) {
+                                val userRole = PreferenceManager.getUserRoles(context)
+                                Log.d("Roles", "User roles: $userRole")
+                                Log.d(
+                                    "SharedPreferences",
+                                    PreferenceManager.getAllPreferences(context).toString()
+                                )
 
-                    Button(
-                        onClick = {
-                            viewModel.viewModelScope.launch {
-                                viewModel.signInUser(context, state.username, state.password)
-                                if (state.loginSuccess) {
-                                    val userRole = PreferenceManager.getUserRoles(context)
-                                    Log.d("Roles", "User roles: $userRole")
-                                    Log.d("SharedPreferences", PreferenceManager.getAllPreferences(context).toString())
-
-                                    when {
-                                        userRole != null && userRole.contains(Roles.ROLE_APODERADO.name) -> {
-                                            navController.navigate(NavScreenAdventurer.bandeja_apoderado_screen.name)
-                                        }
-                                        /*
+                                when {
+                                    userRole != null && userRole.contains(Roles.ROLE_APODERADO.name) -> {
+                                        navController.navigate(NavScreenAdventurer.bandeja_apoderado_screen.name)
+                                    }
+                                    /*
                                         para otro rol
 
                                         userRole != null && userRole.contains(Roles.ROLE_ENTREPRENEUR.name) -> {
                                             navController.navigate(NavScreenAdventurer.adventure_publication_management.name)
                                         }*/
-                                        else -> {
-                                            navController.navigate(NavScreenAdventurer.error_screen.name)
-                                        }
+                                    else -> {
+                                        navController.navigate(NavScreenAdventurer.error_screen.name)
                                     }
                                 }
                             }
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF2A3D66)
-                        ),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Text(
-                            "Iniciar Sesión",
-                            fontSize = 18.sp,
-                            fontFamily = cabinFamily,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            ClickableText(
-                text = AnnotatedString(
-                    text = "¿No tienes una cuenta? Crear cuenta",
-                    spanStyles = listOf(
-                        AnnotatedString.Range(
-                            SpanStyle(
-                                color = PrimaryBrown,
-                                textDecoration = TextDecoration.Underline,
-                                fontWeight = FontWeight.Bold
-                            ),
-                            start = 23,
-                            end = 35
-                        )
-                    )
-                ),
-                onClick = { offset ->
-                    if (offset in 23..35) {
-                        navController.navigate(NavScreenAdventurer.company_selecction_sscreen.name)
-                    }
-                }
-            )
-        }
-
-        if (state.errorMessage != null) {
-            AlertDialog(
-                onDismissRequest = { viewModel.resetState() },
-                confirmButton = {
-                    TextButton(
-                        onClick = { viewModel.resetState() },
-                        colors = ButtonDefaults.textButtonColors(
-                            contentColor = PrimaryBrown
-                        )
-                    ) {
-                        Text("Entendido")
-                    }
-                },
-                title = {
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF2A3D66)
+                    ),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
                     Text(
-                        "Error de inicio de sesión",
-                        color = TextPrimaryColor,
+                        "Iniciar Sesión",
+                        fontSize = 18.sp,
+                        fontFamily = cabinFamily,
                         fontWeight = FontWeight.Bold
                     )
-                },
-                text = {
+                }
+
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 10.dp)
+                        .height(50.dp),
+                    onClick = ({
+                        viewModel.viewModelScope.launch {
+                            viewModel.signInUser(context, state.username, state.password)
+                            if (state.loginSuccess) {
+                                val userRole = PreferenceManager.getUserRoles(context)
+                                Log.d("Roles", "User roles: $userRole")
+                                Log.d(
+                                    "SharedPreferences",
+                                    PreferenceManager.getAllPreferences(context).toString()
+                                )
+
+                                when {
+                                    userRole != null && userRole.contains(Roles.ROLE_APODERADO.name) -> {
+                                        navController.navigate(NavScreenAdventurer.home_scholarships_screen.name)
+                                    }
+                                    /*
+                                        para otro rol
+
+                                        userRole != null && userRole.contains(Roles.ROLE_ENTREPRENEUR.name) -> {
+                                            navController.navigate(NavScreenAdventurer.adventure_publication_management.name)
+                                        }*/
+                                    else -> {
+                                        navController.navigate(NavScreenAdventurer.error_screen.name)
+                                    }
+                                }
+                            }
+                        }
+                    }),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Red
+                    ),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
                     Text(
-                        state.errorMessage ?: "Ha ocurrido un error desconocido.",
-                        color = TextSecondaryColor
+                        "LOGIN ADMIN",
+                        fontSize = 18.sp,
+                        fontFamily = cabinFamily,
+                        fontWeight = FontWeight.Bold
                     )
-                },
-                containerColor = Color.White
-            )
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                ClickableText(
+                    text = AnnotatedString(
+                        text = "¿No tienes una cuenta? Crear cuenta",
+                        spanStyles = listOf(
+                            AnnotatedString.Range(
+                                SpanStyle(
+                                    color = PrimaryBrown,
+                                    textDecoration = TextDecoration.Underline,
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                start = 23,
+                                end = 35
+                            )
+                        )
+                    ),
+                    onClick = { offset ->
+                        if (offset in 23..35) {
+                            navController.navigate(NavScreenAdventurer.company_selecction_sscreen.name)
+                        }
+                    }
+                )
+            }
+
+            if (state.errorMessage != null) {
+                AlertDialog(
+                    onDismissRequest = { viewModel.resetState() },
+                    confirmButton = {
+                        TextButton(
+                            onClick = { viewModel.resetState() },
+                            colors = ButtonDefaults.textButtonColors(
+                                contentColor = PrimaryBrown
+                            )
+                        ) {
+                            Text("Entendido")
+                        }
+                    },
+                    title = {
+                        Text(
+                            "Error de inicio de sesión",
+                            color = TextPrimaryColor,
+                            fontWeight = FontWeight.Bold
+                        )
+                    },
+                    text = {
+                        Text(
+                            state.errorMessage ?: "Ha ocurrido un error desconocido.",
+                            color = TextSecondaryColor
+                        )
+                    },
+                    containerColor = Color.White
+                )
+            }
         }
     }
 }

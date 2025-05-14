@@ -17,6 +17,11 @@ public enum NavScreenAdventurer {
     select_postulacion_screen,
     data_apoderado_form_screen,
 
+
+    // Testeando apoderado visualiza postulaciones
+    home_scholarships_screen,
+
+
     //--------------
 
 

@@ -34,6 +34,8 @@ import com.example.aventurape_androidmobile.domains.authentication.screens.Compa
 import com.example.aventurape_androidmobile.domains.applications.screens.HomeApplicationsScreen
 import com.example.aventurape_androidmobile.domains.applications.screens.SelectPostulacionScreen
 import com.example.aventurape_androidmobile.domains.applications.viewModels.HomeApplicationsViewModel
+import com.example.aventurape_androidmobile.domains.management.screens.HomeScholarshipsScreen
+import com.example.aventurape_androidmobile.domains.management.screens.viewModels.HomeScholarshipsViewModel
 
 @Composable
 fun AdventurerNavigation(navController: NavHostController, context: Context) {
@@ -75,7 +77,6 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
         //-----------------------------
         //Apoderado screens
 
-
         composable(NavScreenAdventurer.bandeja_apoderado_screen.name) { //HOME
             if (userRole != null && userRole!!.contains(Roles.ROLE_APODERADO.name)) {
                 HomeApplicationsScreen(viewModel = homeApplicationsViewModel, navController = navController)
@@ -108,6 +109,21 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
                 navController.navigate(NavScreenAdventurer.error_screen.name)
             }
         }
+
+        // Añadiendo la nueva pantalla HomeScholarshipsScreen
+        composable("home_scholarships_screen") { // Pantalla de becas
+            if (userRole != null && userRole!!.contains(Roles.ROLE_APODERADO.name)) {
+                // Crear el viewModel correcto para esta pantalla
+                val homeScholarshipsViewModel: HomeScholarshipsViewModel = viewModel()
+
+                // Pasar el viewModel correcto a la pantalla
+                HomeScholarshipsScreen(viewModel = homeScholarshipsViewModel, navController = navController)
+            } else {
+                // Handle unauthorized access or redirect
+                navController.navigate(NavScreenAdventurer.error_screen.name)
+            }
+        }
+
         composable("aventurate_screen") {
             AventurateScreen(viewModel = aventurateViewModel, navController = navController)
         }
