@@ -17,7 +17,7 @@ class HomeScholarshipsViewModel : ViewModel() {
         viewModelScope.launch {
             state = state.copy(isLoading = true)
             try {
-                val response = RetrofitClient.placeholder.getScholarshipsByCompanyName(state.companyName)
+                val response = RetrofitClient.placeholder.getAllScholarships()
                 if (response.isSuccessful) {
                     val scholarships = response.body() ?: emptyList()
                     state = state.copy(scholarships = scholarships, isLoading = false)

@@ -205,19 +205,43 @@ fun LogInScreen(viewModel: LoginViewModel, navController: NavHostController) {
                 Button(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(vertical = 10.dp)
                         .height(50.dp),
                     onClick = ({
                         viewModel.viewModelScope.launch {
-                            navController.navigate(NavScreenAdventurer.home_scholarships_screen.name)
+                            viewModel.signInUser(context, state.username, state.password)
+                            if (state.loginSuccess) {
+                                val userRole = PreferenceManager.getUserRoles(context)
+                                Log.d("Roles", "User roles: $userRole")
+                                Log.d(
+                                    "SharedPreferences",
+                                    PreferenceManager.getAllPreferences(context).toString()
+                                )
+
+                                when {
+                                    userRole != null && userRole.contains(Roles.ROLE_APODERADO.name) -> {
+                                        navController.navigate(NavScreenAdventurer.home_scholarships_screen.name)
+                                    }
+                                    /*
+                                        para otro rol
+
+                                        userRole != null && userRole.contains(Roles.ROLE_ENTREPRENEUR.name) -> {
+                                            navController.navigate(NavScreenAdventurer.adventure_publication_management.name)
+                                        }*/
+                                    else -> {
+                                        navController.navigate(NavScreenAdventurer.error_screen.name)
+                                    }
+                                }
+                            }
                         }
                     }),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF2A3D66)
+                        containerColor = Color.Red
                     ),
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
-                        "Bypass Button",
+                        "LOGIN ADMIN",
                         fontSize = 18.sp,
                         fontFamily = cabinFamily,
                         fontWeight = FontWeight.Bold

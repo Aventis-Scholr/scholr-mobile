@@ -80,13 +80,13 @@ fun ScholarshipCard(scholarship: Scholarship, navController: NavController) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Tipo: ${scholarship.scholarShipType}",
+                text = "Tipo: ${scholarship.scholarshipType}",
                 style = MaterialTheme.typography.bodyMedium
             )
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = "Estado: ${scholarship.scholarShipStatus}",
+                text = "Estado: ${scholarship.scholarshipStatus}",
                 style = MaterialTheme.typography.bodyMedium
             )
         }

@@ -5,8 +5,8 @@ public class Scholarship(
     val name: String,
     val companyName: String,
     val requirements: List<Requirement>,
-    val scholarShipType: String,
-    val scholarShipStatus: String,
+    val scholarshipType: String,
+    val scholarshipStatus: String,
     val coordinatorId: Int
 ) {
     data class Requirement(
