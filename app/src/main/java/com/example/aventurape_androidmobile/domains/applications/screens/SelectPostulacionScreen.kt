@@ -62,7 +62,7 @@ fun SelectPostulacionScreen(viewModel: HomeApplicationsViewModel, navController:
 
                 // Botón añadir postulante
                 FloatingActionButton(
-                    onClick = { navController.navigate("postulacion_form_screen") },
+                    onClick = { navController.navigate("add_postulante_form_screen") },
                     modifier = Modifier
                         .padding(16.dp)
                         .clip(RoundedCornerShape(8.dp)),
