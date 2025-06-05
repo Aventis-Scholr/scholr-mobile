@@ -32,6 +32,7 @@ import com.example.aventurape_androidmobile.domains.entrepreneur_publication.vie
 import com.example.aventurape_androidmobile.shared.screens.ErrorScreen
 import com.example.aventurape_androidmobile.domains.authentication.screens.CompanySelectionScreen
 import com.example.aventurape_androidmobile.domains.applications.screens.HomeApplicationsScreen
+import com.example.aventurape_androidmobile.domains.applications.screens.PostulacionFormScreen
 import com.example.aventurape_androidmobile.domains.applications.screens.SelectPostulacionScreen
 import com.example.aventurape_androidmobile.domains.applications.viewModels.HomeApplicationsViewModel
 import com.example.aventurape_androidmobile.domains.management.screens.HomeScholarshipsScreen
@@ -92,7 +93,11 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
         }
 
         composable(NavScreenAdventurer.data_apoderado_form_screen.name) { //HOME
-            DataApoderadoFormScreen(viewModel = homeApplicationsViewModel, navController = navController)
+            DataApoderadoFormScreen(viewModel = homeApplicationsViewModel, navController = navController, 1)
+        }
+
+        composable(NavScreenAdventurer.postulacion_form_screen.name) { //HOME
+            PostulacionFormScreen(viewModel = homeApplicationsViewModel, navController = navController)
 
         }
 

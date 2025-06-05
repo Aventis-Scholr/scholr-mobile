@@ -1,14 +1,12 @@
 package com.example.aventurape_androidmobile.domains.applications.models;
 
-public class DataApoderado (
-    //val Id: Long,
+data class DataApoderado (
     val apoderadoId: Long,
     val nombres: String,
     val apellidos: String,
-    val dni: Long,
     val fechaNacimiento: String,
-    val contacto: Contacto,
-    val domicilio: Domicilio,
-    val cuentaBancaria: CuentaBancaria,
-    val informacionLaboral: InformacionLaboral
+    val tipoDocumento: String,
+    val numeroDocumento: String,
+    val correo: String,
+    val celular: String
 )

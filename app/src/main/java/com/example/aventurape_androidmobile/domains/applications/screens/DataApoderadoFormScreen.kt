@@ -11,27 +11,33 @@ import androidx.navigation.NavController
 import com.example.aventurape_androidmobile.domains.applications.viewModels.HomeApplicationsViewModel
 
 @Composable
-fun DataApoderadoFormScreen(viewModel: HomeApplicationsViewModel, navController: NavController) {
-    var nombre by remember { mutableStateOf("") }
-    var apellido by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var telefono by remember { mutableStateOf("") }
+fun DataApoderadoFormScreen(viewModel: HomeApplicationsViewModel, navController: NavController, apoderadoId: Long) {
+    var nombres by remember { mutableStateOf("") }
+    var apellidos by remember { mutableStateOf("") }
+    var fechaNacimiento by remember { mutableStateOf("") }
+    var tipoDocumento by remember { mutableStateOf("") }
+    var numeroDocumento by remember { mutableStateOf("") }
+    var correo by remember { mutableStateOf("") }
+    var celular by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(true) }
 
     // Cargar datos existentes si están disponibles
-    /*LaunchedEffect(Unit) {
-        val existingData = viewModel.loadDataApoderadoByApoderadoId(2)
-        if (existingData != null) {
-            nombre = existingData.nombres
-            apellido = existingData.apellidos
-            email = existingData.email
-            telefono = existingData.telefono
+    LaunchedEffect(apoderadoId) {
+        viewModel.loadDataApoderadoByApoderadoId(apoderadoId)
+        viewModel.state.dataApoderado?.let {
+            nombres = it.nombres
+            apellidos = it.apellidos
+            fechaNacimiento = it.fechaNacimiento
+            tipoDocumento = it.tipoDocumento
+            numeroDocumento = it.numeroDocumento
+            correo = it.correo
+            celular = it.celular
         }
         isLoading = false
-    }*/
+    }
 
     if (isLoading) {
-        //Text(text = "Cargando datos...")
+        Text(text = "Cargando datos...")
     } else {
         Column(
             modifier = Modifier
@@ -41,89 +47,72 @@ fun DataApoderadoFormScreen(viewModel: HomeApplicationsViewModel, navController:
         ) {
             Text(text = "Formulario de Datos del Apoderado")
 
-            // Campo de texto para el nombre
-            BasicTextField(
-                value = nombre,
-                onValueChange = { nombre = it },
-                modifier = Modifier.fillMaxWidth(),
-                decorationBox = { innerTextField ->
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                    ) {
-                        if (nombre.isEmpty()) Text("Nombre")
-                        innerTextField()
-                    }
+            BasicTextField(value = nombres, onValueChange = { nombres = it }, modifier = Modifier.fillMaxWidth()) {
+                Box(Modifier.fillMaxWidth().padding(8.dp)) {
+                    if (nombres.isEmpty()) Text("Nombres")
+                    it()
                 }
-            )
+            }
 
-            // Campo de texto para el apellido
-            BasicTextField(
-                value = apellido,
-                onValueChange = { apellido = it },
-                modifier = Modifier.fillMaxWidth(),
-                decorationBox = { innerTextField ->
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                    ) {
-                        if (apellido.isEmpty()) Text("Apellido")
-                        innerTextField()
-                    }
+            BasicTextField(value = apellidos, onValueChange = { apellidos = it }, modifier = Modifier.fillMaxWidth()) {
+                Box(Modifier.fillMaxWidth().padding(8.dp)) {
+                    if (apellidos.isEmpty()) Text("Apellidos")
+                    it()
                 }
-            )
+            }
 
-            // Campo de texto para el email
-            BasicTextField(
-                value = email,
-                onValueChange = { email = it },
-                modifier = Modifier.fillMaxWidth(),
-                decorationBox = { innerTextField ->
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                    ) {
-                        if (email.isEmpty()) Text("Email")
-                        innerTextField()
-                    }
+            BasicTextField(value = fechaNacimiento, onValueChange = { fechaNacimiento = it }, modifier = Modifier.fillMaxWidth()) {
+                Box(Modifier.fillMaxWidth().padding(8.dp)) {
+                    if (fechaNacimiento.isEmpty()) Text("Fecha de Nacimiento")
+                    it()
                 }
-            )
+            }
 
-            // Campo de texto para el teléfono
-            BasicTextField(
-                value = telefono,
-                onValueChange = { telefono = it },
-                modifier = Modifier.fillMaxWidth(),
-                decorationBox = { innerTextField ->
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                    ) {
-                        if (telefono.isEmpty()) Text("Teléfono")
-                        innerTextField()
-                    }
+            BasicTextField(value = tipoDocumento, onValueChange = { tipoDocumento = it }, modifier = Modifier.fillMaxWidth()) {
+                Box(Modifier.fillMaxWidth().padding(8.dp)) {
+                    if (tipoDocumento.isEmpty()) Text("Tipo de Documento")
+                    it()
                 }
-            )
+            }
 
-            // Botón para guardar los datos
+            BasicTextField(value = numeroDocumento, onValueChange = { numeroDocumento = it }, modifier = Modifier.fillMaxWidth()) {
+                Box(Modifier.fillMaxWidth().padding(8.dp)) {
+                    if (numeroDocumento.isEmpty()) Text("Número de Documento")
+                    it()
+                }
+            }
+
+            BasicTextField(value = correo, onValueChange = { correo = it }, modifier = Modifier.fillMaxWidth()) {
+                Box(Modifier.fillMaxWidth().padding(8.dp)) {
+                    if (correo.isEmpty()) Text("Correo")
+                    it()
+                }
+            }
+
+            BasicTextField(value = celular, onValueChange = { celular = it }, modifier = Modifier.fillMaxWidth()) {
+                Box(Modifier.fillMaxWidth().padding(8.dp)) {
+                    if (celular.isEmpty()) Text("Celular")
+                    it()
+                }
+            }
+
             Button(
                 onClick = {
-                    /*
                     viewModel.saveDataApoderado(
-                        nombre = nombre,
-                        apellido = apellido,
-                        email = email,
-                        telefono = telefono,
-                    )*/
+                        apoderadoId = apoderadoId,
+                        nombres = nombres,
+                        apellidos = apellidos,
+                        fechaNacimiento = fechaNacimiento,
+                        tipoDocumento = tipoDocumento,
+                        numeroDocumento = numeroDocumento,
+                        correo = correo,
+                        celular = celular
+                    )
                     navController.popBackStack()
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = "Guardar")
+                Text("Guardar")
             }
         }
     }
