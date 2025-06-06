@@ -80,8 +80,14 @@ interface Placeholder {
         @Body dataApoderado: DataApoderado
     ): Response<Void>
 
+    @PUT("data-apoderado/put/apoderado/{apoderadoId}")
+    suspend fun updateDataApoderado(
+        @Path("apoderadoId") apoderadoId: Long,
+        @Body dataApoderado: DataApoderado
+    ): Response<Void>
+
     //get data apoderado by apoderado id
-    @GET("data-apoderado/{apoderadoId}")
+    @GET("data-apoderado/apoderado/{apoderadoId}")
     suspend fun getDataApoderadoByApoderadoId(
         @Path("apoderadoId") apoderadoId: Long
     ): Response<DataApoderado>
