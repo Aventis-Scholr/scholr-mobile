@@ -1,7 +1,7 @@
 package com.example.aventurape_androidmobile.domains.applications.models
 
-class CuentaBancaria (
+data class CuentaBancaria (
     val entidadBancaria: String,
-    val numeroCuenta: Int,
-    val cci: Int
+    val numeroCuenta: String,
+    val cci: String
 )

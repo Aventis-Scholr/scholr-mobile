@@ -71,6 +71,7 @@ interface Placeholder {
     suspend fun getDataApoderadoByApoderadoId(
         @Path("apoderadoId") apoderadoId: Long
     ): Response<DataApoderado>
+
     //--------------- SCHOLARSHIPS ------------------
     @GET("scholarships")
     suspend fun getAllScholarships(): Response<List<Scholarship>>

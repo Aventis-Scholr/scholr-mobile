@@ -40,8 +40,14 @@ class LoginViewModel : ViewModel() {
                 token = userResponse.token
             )
 
+            // Aquí agrega el log para ver el token recibido
+            Log.d("LoginViewModel", "Token recibido: ${userResponse.token}")
+
             // Actualizar el token en el RetrofitClient
-            userLogged.token?.let { RetrofitClient.updateToken(it) }
+            userLogged.token?.let {
+                Log.d("LoginViewModel", "Actualizando token en RetrofitClient")
+                RetrofitClient.updateToken(it)
+            }
 
             // Guardar datos del usuario en SharedPreferences
             saveUserInSharedPreferences(context, userLogged.id!!)

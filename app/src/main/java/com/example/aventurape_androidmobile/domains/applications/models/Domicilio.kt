@@ -1,6 +1,6 @@
 package com.example.aventurape_androidmobile.domains.applications.models
 
-class Domicilio (
+data class Domicilio (
     val direccion: String,
     val departamento: String,
     val provincia: String,

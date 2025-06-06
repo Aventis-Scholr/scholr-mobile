@@ -9,9 +9,14 @@ class TokenInterceptor(private val tokenProvider: () -> String?) : Interceptor {
 
         // Obtén el token desde el proveedor
         val token = tokenProvider()
+
         if (token != null) {
             // Agrega el token al encabezado de autorización
             requestBuilder.addHeader("Authorization", "Bearer $token")
+            android.util.Log.d("TokenInterceptor", "Token agregado a la petición: $token")
+        }
+        else {
+            android.util.Log.d("TokenInterceptor", "No hay token para agregar")
         }
 
         return chain.proceed(requestBuilder.build())
