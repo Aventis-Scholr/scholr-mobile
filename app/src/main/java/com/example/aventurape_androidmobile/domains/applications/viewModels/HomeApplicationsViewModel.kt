@@ -2,6 +2,7 @@ package com.example.aventurape_androidmobile.domains.applications.viewModels
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -22,14 +23,7 @@ class HomeApplicationsViewModel : ViewModel(){
     var deleteApplicationSuccess by mutableStateOf(false)
         private  set
 
-    // Campos del formulario (uno por cada dato del apoderado)
-    var nombres by mutableStateOf("")
-    var apellidos by mutableStateOf("")
-    var fechaNacimiento by mutableStateOf("")
-    var tipoDocumento by mutableStateOf("")
-    var numeroDocumento by mutableStateOf("")
-    var correo by mutableStateOf("")
-    var celular by mutableStateOf("")
+    //-------------------------------------------------
 
     fun loadApplications() {
 
@@ -115,58 +109,9 @@ class HomeApplicationsViewModel : ViewModel(){
         }
     }
 
-    //data apoderado--------------------------------
+    // ================== ATOS DEL APODERADO ==================
 
-    // ================== CARGAR DATOS DEL APODERADO ==================
-    fun loadDataApoderadoByApoderadoId(apoderadoId: Long) {
-        viewModelScope.launch {
-            state = state.copy(isLoading = true)
-            try {
-                val response = RetrofitClient.placeholder.getDataApoderadoByApoderadoId(apoderadoId)
-                if (response.isSuccessful) {
-                    val dataApoderado = response.body()
-                    dataApoderado?.let {
-                        // Llenar campos del formulario con los datos obtenidos
-                        nombres = it.nombres ?: ""
-                        apellidos = it.apellidos ?: ""
-                        fechaNacimiento = it.fechaNacimiento ?: ""
-                        tipoDocumento = it.tipoDocumento ?: ""
-                        numeroDocumento = it.numeroDocumento ?: ""
-                        correo = it.correo ?: ""
-                        celular = it.celular ?: ""
-                    }
-                    state = state.copy(dataApoderado = dataApoderado, isLoading = false)
-                } else {
-                    state = state.copy(errorMessage = "Error ${response.code()}", isLoading = false)
-                }
-            } catch (e: Exception) {
-                state = state.copy(errorMessage = "Exception: ${e.localizedMessage}", isLoading = false)
-            }
-        }
-    }
-
-    // ================== GUARDAR DATOS DEL APODERADO ==================
-    fun saveDataApoderado(
-        apoderadoId: Long,
-        nombres: String,
-        apellidos: String,
-        fechaNacimiento: String,
-        tipoDocumento: String,
-        numeroDocumento: String,
-        correo: String,
-        celular: String
-    ) {
-        val dataApoderado = DataApoderado(
-            apoderadoId = apoderadoId,
-            nombres = nombres,
-            apellidos = apellidos,
-            fechaNacimiento = fechaNacimiento,
-            tipoDocumento = tipoDocumento,
-            numeroDocumento = numeroDocumento,
-            correo = correo,
-            celular = celular
-        )
-
+    fun createDataApoderado(dataApoderado: DataApoderado, apoderadoId: Long) {
         viewModelScope.launch {
             state = state.copy(isLoading = true)
             try {
@@ -174,7 +119,43 @@ class HomeApplicationsViewModel : ViewModel(){
                 if (response.isSuccessful) {
                     state = state.copy(isLoading = false)
                 } else {
-                    state = state.copy(errorMessage = "Error al guardar datos", isLoading = false)
+                    state = state.copy(errorMessage = "Error al crear datos del apoderado", isLoading = false)
+                }
+            } catch (e: Exception) {
+                state = state.copy(errorMessage = e.localizedMessage, isLoading = false)
+            }
+        }
+    }
+
+
+    //cargar datos y almacenar campos para el formulario
+    fun getDataApoderadoByApoderadoId(apoderadoId: Long){
+        viewModelScope.launch {
+            state = state.copy(isLoading = true)
+            try {
+                val response = RetrofitClient.placeholder.getDataApoderadoByApoderadoId(apoderadoId)
+                if (response.isSuccessful) {
+                    val dataApoderado = response.body()
+                    state = state.copy(dataApoderado = dataApoderado, isLoading = false)
+                } else {
+                    state = state.copy(dataApoderado = null, errorMessage = "Failed to load data apoderado", isLoading = false)
+                }
+            } catch (e: Exception) {
+                state = state.copy(errorMessage = e.localizedMessage, isLoading = false)
+            }
+        }
+    }
+
+    //update datos del apoderado
+    fun updateDataApoderado(dataApoderado: DataApoderado, apoderadoId: Long) {
+        viewModelScope.launch {
+            state = state.copy(isLoading = true)
+            try {
+                val response = RetrofitClient.placeholder.updateDataApoderado(apoderadoId, dataApoderado)
+                if (response.isSuccessful) {
+                    state = state.copy(isLoading = false)
+                } else {
+                    state = state.copy(errorMessage = "Error al actualizar datos del apoderado", isLoading = false)
                 }
             } catch (e: Exception) {
                 state = state.copy(errorMessage = e.localizedMessage, isLoading = false)

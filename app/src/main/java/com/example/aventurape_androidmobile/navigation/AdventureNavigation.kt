@@ -94,7 +94,7 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
         }
 
         composable(NavScreenAdventurer.data_apoderado_form_screen.name) { //HOME
-            DataApoderadoFormScreen(viewModel = homeApplicationsViewModel, navController = navController, 1)
+            DataApoderadoFormScreen(viewModel = homeApplicationsViewModel, navController = navController, context)
         }
 
 
