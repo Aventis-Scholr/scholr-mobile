@@ -24,7 +24,6 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
-import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
@@ -51,6 +50,21 @@ interface Placeholder {
     //get all applications
     @GET("applications")
     suspend fun getAllApplications(): Response<List<Application>>
+
+    @GET("applications/apoderado/{apoderadoId}")
+    suspend fun getApplicationsByApoderadoId(
+        @Path("apoderadoId") apoderadoId: Long
+    ): Response<List<Application>>
+
+    @POST("applications/apoderado/{apoderadoId}")
+    suspend fun createApplication(
+        @Body application: Application, @Path("apoderadoId") apoderadoId: Long
+    ): Response<Void>
+
+    @DELETE("applications/{id}")
+    suspend fun deleteApplication(
+        @Path("id") id: Long
+    ): Response<Void>
 
     //get data apdoerado por id de apoderado y id de data
     @GET("data-apoderado/{apoderadoId}/{id}")

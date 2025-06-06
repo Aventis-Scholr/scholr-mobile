@@ -1,5 +1,7 @@
 package com.example.aventurape_androidmobile.domains.applications.screens
 
+import android.R.attr.left
+import android.content.Context
 import android.graphics.Color
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -12,8 +14,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -23,17 +29,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.isPopupLayout
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.aventurape_androidmobile.domains.adventurer.screens.AdventureCard
 import com.example.aventurape_androidmobile.domains.applications.models.Application
 import com.example.aventurape_androidmobile.domains.applications.viewModels.HomeApplicationsViewModel
 import com.example.aventurape_androidmobile.shared.components.TopBar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
-fun HomeApplicationsScreen(viewModel: HomeApplicationsViewModel, navController: NavController) {
+fun HomeApplicationsScreen(viewModel: HomeApplicationsViewModel, navController: NavController, context: Context) {
+
+    // Obtener el ID del usuario logeado
+    val userId = PreferenceManager.getUserId(context)
 
     LaunchedEffect(Unit) {
-        viewModel.loadApplications()
+        viewModel.getApplicationsByApoderadoId(userId)
     }
 
     Scaffold (modifier = Modifier.fillMaxSize(),
@@ -59,7 +73,7 @@ fun HomeApplicationsScreen(viewModel: HomeApplicationsViewModel, navController: 
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(viewModel.state.applications) { application ->
-                    ApplicationCard(application, navController)
+                    ApplicationCard(viewModel, application, navController, userId)
                 }
             }
 
@@ -88,7 +102,7 @@ fun HomeApplicationsScreen(viewModel: HomeApplicationsViewModel, navController: 
 }
 
 @Composable
-fun ApplicationCard(application: Application, navController: NavController) {
+fun ApplicationCard(viewModel: HomeApplicationsViewModel, application: Application, navController: NavController, userId: Long) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -107,7 +121,21 @@ fun ApplicationCard(application: Application, navController: NavController) {
                 modifier = Modifier.padding(bottom = 10.dp),
                 fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
             )
-
+        }
+        Column(
+            modifier = Modifier.padding(start = 330.dp)
+        ) {
+            IconButton(
+                onClick = {
+                    viewModel.viewModelScope.launch(Dispatchers.IO) {
+                        viewModel.deleteApplication(application.id.toLong(), userId)
+                    }
+                }
+            ) {
+                Icon(
+                imageVector = Icons.Default.Delete,
+                    contentDescription = ""
+            ) }
         }
     }
 }
