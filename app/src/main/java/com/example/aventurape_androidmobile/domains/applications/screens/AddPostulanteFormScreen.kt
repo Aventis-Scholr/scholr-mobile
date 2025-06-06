@@ -1,5 +1,6 @@
 package com.example.aventurape_androidmobile.domains.applications.screens
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,14 +26,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.aventurape_androidmobile.domains.applications.models.Application
 import com.example.aventurape_androidmobile.domains.applications.viewModels.HomeApplicationsViewModel
 import com.example.aventurape_androidmobile.shared.components.TopBar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.Date
 
 @Composable
-fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController: NavController)
+fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController: NavController, context: Context)
 {
 
     // Datos del postulante
@@ -56,6 +60,9 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
     // Tipo de beca
     var scholarshipTypeInput by remember { mutableStateOf("") }
 
+    // Obtener el ID del usuario logeado
+    val userId = PreferenceManager.getUserId(context)
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
@@ -76,6 +83,26 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
                     .padding(vertical = 25.dp),
                 fontWeight = FontWeight.Bold,
                 fontSize = 25.sp
+            )
+
+            // Sección de tipo de beca
+            Text("Tipo de Beca",
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .padding(top = 20.dp, bottom = 10.dp),
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                color = Color.Blue
+            )
+
+            OutlinedTextField(
+                modifier = Modifier
+                    .padding(vertical = 10.dp)
+                    .padding(horizontal = 60.dp)
+                    .background(Color.White),
+                value = scholarshipTypeInput,
+                onValueChange = { scholarshipTypeInput = it },
+                placeholder = { Text("MERITO, DEPORTIVA, ECONOMICA, CULTURAL") }
             )
 
             // Sección de información personal
@@ -154,7 +181,7 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
                     .background(Color.White),
                 value = birthdayInput,
                 onValueChange = { birthdayInput = it },
-                placeholder = { Text("DD/MM/YYYY") }
+                placeholder = { Text("YYYY-MM-DD") }
             )
 
             // Sección de contacto
@@ -306,30 +333,10 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
                 placeholder = { Text("Distrito") }
             )
 
-            // Sección de tipo de beca
-            Text("Tipo de Beca",
-                modifier = Modifier
-                    .padding(horizontal = 20.dp)
-                    .padding(top = 20.dp, bottom = 10.dp),
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
-                color = Color.Blue
-            )
-
-            OutlinedTextField(
-                modifier = Modifier
-                    .padding(vertical = 10.dp)
-                    .padding(horizontal = 60.dp)
-                    .background(Color.White),
-                value = scholarshipTypeInput,
-                onValueChange = { scholarshipTypeInput = it },
-                placeholder = { Text("Ingrese el tipo de beca solicitada") }
-            )
-
             // Botón para guardar
             Button(
                 onClick = {
-                    // Crear el objeto Postulante con los datos del formulario
+                    // Crear el objeto Postulante
                     val postulante = Application.Postulante(
                         nombres = nameInput,
                         apellidos = lastNamesInput,
@@ -349,10 +356,24 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
                         )
                     )
 
-                    // Aquí podrías llamar a tu ViewModel para guardar los datos
-                    // viewModel.saveApplication(postulante, scholarshipTypeInput)
+                    // Crear el objeto Application completo
+                    val application = Application(
+                        id = 0, // El backend probablemente asignará un ID
+                        idApoderado = userId.toInt(), // Usar el ID del usuario logeado
+                        status = "PENDIENTE", // Estado inicial
+                        tipoBeca = scholarshipTypeInput,
+                        postulante = postulante
+                    )
 
-                    // Navegar de regreso o mostrar mensaje de éxito
+                    viewModel.viewModelScope.launch(Dispatchers.IO) {
+                        // Llamar al ViewModel para crear la aplicación
+                        viewModel.createApplication(application, userId)
+                    }
+
+
+
+                    // Navegar de regreso
+                    navController.popBackStack()
                     navController.popBackStack()
                 },
                 modifier = Modifier
@@ -361,6 +382,14 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
                     .fillMaxWidth()
             ) {
                 Text("Guardar Postulante")
+            }
+
+            if (viewModel.createApplicationSuccess) {
+                Text(
+                    "Aplicación creada con éxito",
+                    color = Color.Green,
+                    modifier = Modifier.padding(16.dp)
+                )
             }
         }
     }

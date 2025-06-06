@@ -81,7 +81,7 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
 
         composable(NavScreenAdventurer.bandeja_apoderado_screen.name) { //HOME
             if (userRole != null && userRole!!.contains(Roles.ROLE_APODERADO.name)) {
-                HomeApplicationsScreen(viewModel = homeApplicationsViewModel, navController = navController)
+                HomeApplicationsScreen(viewModel = homeApplicationsViewModel, navController = navController, context)
             } else {
                 // Handle unauthorized access or redirect
                 navController.navigate(NavScreenAdventurer.error_screen.name)
@@ -99,7 +99,7 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
 
 
         composable(NavScreenAdventurer.add_postulante_form_screen.name) {
-            AddPostulanteFormScreen(viewModel = homeApplicationsViewModel, navController = navController)
+            AddPostulanteFormScreen(viewModel = homeApplicationsViewModel, navController = navController, context)
         }
 
         //------------------------------
