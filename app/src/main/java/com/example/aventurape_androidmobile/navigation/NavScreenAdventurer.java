@@ -23,7 +23,7 @@ public enum NavScreenAdventurer {
     // Testeando apoderado visualiza postulaciones
     home_scholarships_screen,
 
-
+    cartilla_instrucciones,
     //--------------
 
 

@@ -33,6 +33,7 @@ import com.example.aventurape_androidmobile.domains.entrepreneur_publication.vie
 import com.example.aventurape_androidmobile.shared.screens.ErrorScreen
 import com.example.aventurape_androidmobile.domains.authentication.screens.CompanySelectionScreen
 import com.example.aventurape_androidmobile.domains.applications.screens.HomeApplicationsScreen
+import com.example.aventurape_androidmobile.domains.applications.screens.InstruccionesBecaScreen
 import com.example.aventurape_androidmobile.domains.applications.screens.SelectPostulacionScreen
 import com.example.aventurape_androidmobile.domains.applications.screens.TutorialScreen
 import com.example.aventurape_androidmobile.domains.applications.viewModels.HomeApplicationsViewModel
@@ -108,6 +109,10 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
             AddPostulanteFormScreen(viewModel = homeApplicationsViewModel, navController = navController, context)
         }
 
+
+        composable(NavScreenAdventurer.cartilla_instrucciones.name) {
+            InstruccionesBecaScreen(navController = navController)
+        }
         //-----------------------------------------
 
 
