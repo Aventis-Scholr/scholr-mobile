@@ -10,14 +10,19 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,16 +33,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.aventurape_androidmobile.domains.applications.models.Application
 import com.example.aventurape_androidmobile.domains.applications.viewModels.HomeApplicationsViewModel
+import com.example.aventurape_androidmobile.shared.components.Drawer
 import com.example.aventurape_androidmobile.shared.components.TopBar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Date
 
 @Composable
-fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController: NavController, context: Context)
+fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController: NavHostController, context: Context)
 {
+    //para el drawer
+    val drawerState= rememberDrawerState(
+        initialValue = DrawerValue.Closed
+    )
+    val scope= rememberCoroutineScope()
 
     // Datos del postulante
     var nameInput by remember { mutableStateOf("") }
@@ -63,11 +75,30 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
     // Obtener el ID del usuario logeado
     val userId = PreferenceManager.getUserId(context)
 
+
+    ModalNavigationDrawer(
+        drawerState=drawerState,
+        drawerContent = {
+            ModalDrawerSheet {
+                Drawer(navController)
+            }
+        }
+    ) {
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
         topBar = {
-            TopBar()
+            TopBar(onOpenDrawer = {
+                scope.launch {
+                    drawerState.apply {
+                        if(isClosed)
+                            open()
+                        else
+                            close()
+                    }
+                }
+            })
         },
     ) { paddingValues ->
         Column(
@@ -393,4 +424,4 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
             }
         }
     }
-}
+}}

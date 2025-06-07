@@ -7,8 +7,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,13 +22,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.aventurape_androidmobile.domains.applications.models.DataApoderado
 import com.example.aventurape_androidmobile.domains.applications.viewModels.HomeApplicationsViewModel
+import com.example.aventurape_androidmobile.shared.components.Drawer
+import com.example.aventurape_androidmobile.shared.components.TopBar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun DataApoderadoFormScreen(viewModel: HomeApplicationsViewModel, navController: NavController, context: Context) {
+fun DataApoderadoFormScreen(viewModel: HomeApplicationsViewModel, navController: NavHostController, context: Context) {
+    //para el drawer
+    val drawerState= rememberDrawerState(
+        initialValue = DrawerValue.Closed
+    )
+    val scope= rememberCoroutineScope()
+
+
     //var id
     var nombresInput by remember { mutableStateOf("") }
     var apellidosInput by remember { mutableStateOf("") }
@@ -122,15 +137,38 @@ fun DataApoderadoFormScreen(viewModel: HomeApplicationsViewModel, navController:
         isLoading = false
     }
 
+    ModalNavigationDrawer(
+        drawerState=drawerState,
+        drawerContent = {
+            ModalDrawerSheet {
+                Drawer(navController)
+            }
+        }
+    ) {
 
+    Scaffold(
+        modifier = Modifier
+            .fillMaxSize(),
+        topBar = {
+            TopBar(onOpenDrawer = {
+                scope.launch {
+                    drawerState.apply {
+                        if(isClosed)
+                            open()
+                        else
+                            close()
+                    }
+                }
+            })
+        },
+    ) { paddingValues ->
     if (isLoading) {
         Text(text = "Cargando datos...")
     } else {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 20.dp)
-                .padding(vertical = 25.dp)
+                .padding(paddingValues)
                 .background(Color(220,241,249))
                 .verticalScroll(rememberScrollState())  // Para hacer scroll si el contenido es largo
         ) {
@@ -442,4 +480,4 @@ fun DataApoderadoFormScreen(viewModel: HomeApplicationsViewModel, navController:
             }
         }
     }
-}
+}}}

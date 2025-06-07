@@ -36,7 +36,7 @@ fun HomeScholarshipsScreen(viewModel: HomeScholarshipsViewModel, navController: 
 
     Scaffold(modifier = Modifier.fillMaxSize(),
         topBar = {
-            TopBar()
+            TopBar(onOpenDrawer = {})
         }
     ) { paddingValues ->
         Column(

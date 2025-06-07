@@ -12,6 +12,7 @@ public enum NavScreenAdventurer {
     //----------------
     //apoderado
 
+    tutorial_screen,
     bandeja_apoderado_screen,
 
     select_postulacion_screen,
@@ -22,7 +23,7 @@ public enum NavScreenAdventurer {
     // Testeando apoderado visualiza postulaciones
     home_scholarships_screen,
 
-
+    cartilla_instrucciones,
     //--------------
 
 
