@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class) //al poner TopAppBar se necesita esto (se importa)
 @Composable
-fun TopBar(){
+fun TopBar(onOpenDrawer:()-> Unit){
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color(0xFF2A3D66),
@@ -47,7 +47,7 @@ fun TopBar(){
         },
         navigationIcon = {
             IconButton(
-                onClick = {}
+                onClick = {onOpenDrawer()}
             ) {
                 Icon(
                     imageVector = Icons.Default.Menu, //el menu hamburguesa

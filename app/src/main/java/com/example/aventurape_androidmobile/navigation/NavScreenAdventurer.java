@@ -12,6 +12,7 @@ public enum NavScreenAdventurer {
     //----------------
     //apoderado
 
+    tutorial_screen,
     bandeja_apoderado_screen,
 
     select_postulacion_screen,

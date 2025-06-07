@@ -33,8 +33,8 @@ import com.example.aventurape_androidmobile.domains.entrepreneur_publication.vie
 import com.example.aventurape_androidmobile.shared.screens.ErrorScreen
 import com.example.aventurape_androidmobile.domains.authentication.screens.CompanySelectionScreen
 import com.example.aventurape_androidmobile.domains.applications.screens.HomeApplicationsScreen
-import com.example.aventurape_androidmobile.domains.applications.screens.PostulacionFormScreen
 import com.example.aventurape_androidmobile.domains.applications.screens.SelectPostulacionScreen
+import com.example.aventurape_androidmobile.domains.applications.screens.TutorialScreen
 import com.example.aventurape_androidmobile.domains.applications.viewModels.HomeApplicationsViewModel
 import com.example.aventurape_androidmobile.domains.management.screens.HomeScholarshipsScreen
 import com.example.aventurape_androidmobile.domains.management.screens.viewModels.HomeScholarshipsViewModel
@@ -76,7 +76,7 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
             SignUpScreen(viewModel = signUpViewModel, navController = navController)
         }
 
-        //-----------------------------
+        //-------------------------------------------
         //Apoderado screens
 
         composable(NavScreenAdventurer.bandeja_apoderado_screen.name) { //HOME
@@ -86,6 +86,12 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
                 // Handle unauthorized access or redirect
                 navController.navigate(NavScreenAdventurer.error_screen.name)
             }
+        }
+
+
+        composable(NavScreenAdventurer.tutorial_screen.name) { //Tutorial
+            TutorialScreen(viewModel = homeApplicationsViewModel, navController = navController)
+
         }
 
         composable(NavScreenAdventurer.select_postulacion_screen.name) { //HOME
@@ -102,7 +108,7 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
             AddPostulanteFormScreen(viewModel = homeApplicationsViewModel, navController = navController, context)
         }
 
-        //------------------------------
+        //-----------------------------------------
 
 
         //aventurero screens
