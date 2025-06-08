@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -158,19 +161,40 @@ fun ApplicationCard(viewModel: HomeApplicationsViewModel, application: Applicati
             )
         }
         Column(
-            modifier = Modifier.padding(start = 330.dp)
+            horizontalAlignment = Alignment.End,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            IconButton(
-                onClick = {
-                    viewModel.viewModelScope.launch(Dispatchers.IO) {
-                        viewModel.deleteApplication(application.id.toLong(), userId)
-                    }
+            Row {
+                if (application.status == "SINENVIAR")
+                {
+                    IconButton(
+                        onClick = {
+                            viewModel.viewModelScope.launch(Dispatchers.IO) {
+                                viewModel.applicationToEdit = application;
+                            }
+                            navController.navigate("edit_postulante_form_screen")
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = ""
+                        ) }
                 }
-            ) {
-                Icon(
-                imageVector = Icons.Default.Delete,
-                    contentDescription = ""
-            ) }
+
+                IconButton(
+                    onClick = {
+                        viewModel.viewModelScope.launch(Dispatchers.IO) {
+                            viewModel.deleteApplication(application.id.toLong(), userId)
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = ""
+                    ) }
+            }
+
+
         }
     }
 }

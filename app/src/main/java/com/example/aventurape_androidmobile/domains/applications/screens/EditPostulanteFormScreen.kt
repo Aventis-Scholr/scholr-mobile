@@ -1,6 +1,7 @@
 package com.example.aventurape_androidmobile.domains.applications.screens
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -44,7 +45,7 @@ import kotlinx.coroutines.launch
 import java.util.Date
 
 @Composable
-fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController: NavHostController, context: Context)
+fun EditPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController: NavHostController, context: Context)
 {
     //para el drawer
     val drawerState= rememberDrawerState(
@@ -53,25 +54,25 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
     val scope= rememberCoroutineScope()
 
     // Datos del postulante
-    var nameInput by remember { mutableStateOf("") }
-    var lastNamesInput by remember { mutableStateOf("") }
-    var dniInput by remember { mutableStateOf("") }
-    var birthdayInput by remember { mutableStateOf("") }
+    var nameInput by remember { mutableStateOf(viewModel.applicationToEdit.postulante.nombres) }
+    var lastNamesInput by remember { mutableStateOf(viewModel.applicationToEdit.postulante.apellidos) }
+    var dniInput by remember { mutableStateOf(viewModel.applicationToEdit.postulante.dni.toString()) }
+    var birthdayInput by remember { mutableStateOf(viewModel.applicationToEdit.postulante.fechaNacimiento) }
 
     // Contacto del postulante
-    var emailInput by remember { mutableStateOf("") }
-    var phoneInput by remember { mutableStateOf("") }
+    var emailInput by remember { mutableStateOf(viewModel.applicationToEdit.postulante.contacto.correo) }
+    var phoneInput by remember { mutableStateOf(viewModel.applicationToEdit.postulante.contacto.celular.toString()) }
 
     // Centro de estudios
-    var schoolNameInput by remember { mutableStateOf("") }
-    var schoolTypeInput by remember { mutableStateOf("") }
-    var schoolLevelInput by remember { mutableStateOf("") }
-    var schoolDepartmentInput by remember { mutableStateOf("") }
-    var schoolProvinceInput by remember { mutableStateOf("") }
-    var schoolDistrictInput by remember { mutableStateOf("") }
+    var schoolNameInput by remember { mutableStateOf(viewModel.applicationToEdit.postulante.centroEstudios.nombre) }
+    var schoolTypeInput by remember { mutableStateOf(viewModel.applicationToEdit.postulante.centroEstudios.tipo) }
+    var schoolLevelInput by remember { mutableStateOf(viewModel.applicationToEdit.postulante.centroEstudios.nivel) }
+    var schoolDepartmentInput by remember { mutableStateOf(viewModel.applicationToEdit.postulante.centroEstudios.departamento) }
+    var schoolProvinceInput by remember { mutableStateOf(viewModel.applicationToEdit.postulante.centroEstudios.provincia) }
+    var schoolDistrictInput by remember { mutableStateOf(viewModel.applicationToEdit.postulante.centroEstudios.distrito) }
 
     // Tipo de beca
-    var scholarshipTypeInput by remember { mutableStateOf("") }
+    var scholarshipTypeInput by remember { mutableStateOf(viewModel.applicationToEdit.tipoBeca) }
 
     // Obtener el ID del usuario logeado
     val userId = PreferenceManager.getUserId(context)
@@ -109,7 +110,7 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
                 .background(Color(220,241,249))
                 .verticalScroll(rememberScrollState())  // Para hacer scroll si el contenido es largo
         ) {
-            Text("Añadir Postulante",
+            Text("Editar Postulante",
                 modifier = Modifier
                     .padding(horizontal = 20.dp)
                     .padding(vertical = 25.dp),
@@ -364,9 +365,11 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
                 onValueChange = { schoolDistrictInput = it },
                 placeholder = { Text("Distrito") }
             )
-                // Botón para guardar
-                Button(
-                    onClick = {
+
+
+            // Botón para guardar
+            Button(
+                onClick = {
                         // Crear el objeto Postulante
                         val postulante = Application.Postulante(
                             nombres = nameInput,
@@ -398,25 +401,22 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
 
                         viewModel.viewModelScope.launch(Dispatchers.IO) {
                             // Llamar al ViewModel para crear la aplicación
-                            viewModel.createApplication(application, userId)
+                            println(application.postulante.nombres);
+                            viewModel.updateApplication(application, viewModel.applicationToEdit.id.toLong())
                         }
-
-
 
                         // Navegar de regreso
                         navController.popBackStack()
-                        navController.popBackStack()
                     },
-                    modifier = Modifier
+                modifier = Modifier
                         .padding(vertical = 20.dp)
                         .padding(horizontal = 100.dp)
                         .fillMaxWidth()
-                ) {
-                    Text("Guardar Y Cerrar")
-                }
-
-                Button(
-                    onClick = {
+            ) {
+                Text("Guardar Y Cerrar")
+            }
+            Button(
+                onClick = {
                         // Crear el objeto Postulante
                         val postulante = Application.Postulante(
                             nombres = nameInput,
@@ -448,22 +448,21 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
 
                         viewModel.viewModelScope.launch(Dispatchers.IO) {
                             // Llamar al ViewModel para crear la aplicación
-                            viewModel.createApplication(application, userId)
+                            viewModel.updateApplication(application, viewModel.applicationToEdit.id.toLong())
                         }
 
 
 
                         // Navegar de regreso
                         navController.popBackStack()
-                        navController.popBackStack()
                     },
-                    modifier = Modifier
+                modifier = Modifier
                         .padding(vertical = 20.dp)
                         .padding(horizontal = 100.dp)
                         .fillMaxWidth()
-                ) {
-                    Text("Finalizar y Enviar")
-                }
+            ) {
+                Text("Finalizar y Enviar")
+            }
 
             if (viewModel.createApplicationSuccess) {
                 Text(

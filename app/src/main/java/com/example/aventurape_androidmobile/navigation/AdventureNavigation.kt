@@ -25,6 +25,7 @@ import com.example.aventurape_androidmobile.domains.adventurer.viewModels.HomeAd
 import com.example.aventurape_androidmobile.domains.adventurer.viewModels.ProfileViewModelA
 import com.example.aventurape_androidmobile.domains.applications.screens.AddPostulanteFormScreen
 import com.example.aventurape_androidmobile.domains.applications.screens.DataApoderadoFormScreen
+import com.example.aventurape_androidmobile.domains.applications.screens.EditPostulanteFormScreen
 import com.example.aventurape_androidmobile.domains.authentication.screens.viewModels.LoginViewModel
 import com.example.aventurape_androidmobile.domains.authentication.screens.viewModels.SignUpViewModel
 import com.example.aventurape_androidmobile.domains.entrepreneur_publication.screens.AccountEntrepreneur
@@ -107,6 +108,10 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
 
         composable(NavScreenAdventurer.add_postulante_form_screen.name) {
             AddPostulanteFormScreen(viewModel = homeApplicationsViewModel, navController = navController, context)
+        }
+
+        composable(NavScreenAdventurer.edit_postulante_form_screen.name) {
+            EditPostulanteFormScreen(viewModel = homeApplicationsViewModel, navController = navController, context)
         }
 
 

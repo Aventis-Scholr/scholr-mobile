@@ -23,6 +23,10 @@ class HomeApplicationsViewModel : ViewModel(){
     var deleteApplicationSuccess by mutableStateOf(false)
         private  set
 
+    var updateApplicationSuccess by mutableStateOf(false)
+        private  set
+
+    lateinit var applicationToEdit: Application
     //-------------------------------------------------
 
     fun loadApplications() {
@@ -73,6 +77,30 @@ class HomeApplicationsViewModel : ViewModel(){
                 } else {
                     state = state.copy(
                         errorMessage = "Error ${response.code()}: Failed to create application",
+                        isLoading = false
+                    )
+                }
+            } catch (e: Exception) {
+                state = state.copy(
+                    errorMessage = "Exception: ${e.localizedMessage}",
+                    isLoading = false
+                )
+            }
+        }
+    }
+
+    fun updateApplication(application: Application, id: Long) {
+        viewModelScope.launch {
+            state = state.copy(isLoading = true)
+            try {
+                val response = RetrofitClient.placeholder.updateApplication(application, id)
+                if (response.isSuccessful) {
+                    updateApplicationSuccess = true
+                    state = state.copy(isLoading = false)
+                    getApplicationsByApoderadoId(application.idApoderado.toLong())
+                } else {
+                    state = state.copy(
+                        errorMessage = "Error ${response.code()}: Failed to update application",
                         isLoading = false
                     )
                 }
