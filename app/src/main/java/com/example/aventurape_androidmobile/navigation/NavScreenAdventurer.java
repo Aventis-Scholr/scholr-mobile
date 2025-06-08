@@ -18,6 +18,7 @@ public enum NavScreenAdventurer {
     select_postulacion_screen,
     data_apoderado_form_screen,
     add_postulante_form_screen,
+    edit_postulante_form_screen,
 
 
     // Testeando apoderado visualiza postulaciones

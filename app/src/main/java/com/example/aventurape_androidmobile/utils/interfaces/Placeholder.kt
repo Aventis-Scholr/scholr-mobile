@@ -61,6 +61,11 @@ interface Placeholder {
         @Body application: Application, @Path("apoderadoId") apoderadoId: Long
     ): Response<Void>
 
+    @PUT("applications/{id}")
+    suspend fun updateApplication(
+        @Body application: Application, @Path("id") id: Long
+    ): Response<Void>
+
     @DELETE("applications/{id}")
     suspend fun deleteApplication(
         @Path("id") id: Long
@@ -84,7 +89,7 @@ interface Placeholder {
     suspend fun updateDataApoderado(
         @Path("apoderadoId") apoderadoId: Long,
         @Body dataApoderado: DataApoderado
-    ): Response<Void>
+    ): Response<Application>
 
     //get data apoderado by apoderado id
     @GET("data-apoderado/apoderado/{apoderadoId}")
