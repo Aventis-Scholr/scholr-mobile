@@ -6,6 +6,7 @@ import com.example.aventurape_androidmobile.utils.models.PublicationResponse
 import com.example.aventurape_androidmobile.domains.adventurer.models.Comment
 import com.example.aventurape_androidmobile.domains.adventurer.models.Review
 import com.example.aventurape_androidmobile.domains.applications.models.Application
+import com.example.aventurape_androidmobile.domains.applications.models.ApplicationRequest
 import com.example.aventurape_androidmobile.domains.applications.models.DataApoderado
 import com.example.aventurape_androidmobile.domains.entrepreneur_publication.models.ProfileE
 import com.example.aventurape_androidmobile.domains.management.models.Scholarship
@@ -58,12 +59,12 @@ interface Placeholder {
 
     @POST("applications/apoderado/{apoderadoId}")
     suspend fun createApplication(
-        @Body application: Application, @Path("apoderadoId") apoderadoId: Long
+        @Body application: ApplicationRequest, @Path("apoderadoId") apoderadoId: Long
     ): Response<Void>
 
     @PUT("applications/{id}")
     suspend fun updateApplication(
-        @Body application: Application, @Path("id") id: Long
+        @Body application: ApplicationRequest, @Path("id") id: Long
     ): Response<Void>
 
     @DELETE("applications/{id}")

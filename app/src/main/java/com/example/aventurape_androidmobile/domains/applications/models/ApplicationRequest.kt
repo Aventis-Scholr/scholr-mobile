@@ -1,16 +1,11 @@
-package com.example.aventurape_androidmobile.domains.applications.models;
+package com.example.aventurape_androidmobile.domains.applications.models
 
-public class Application (
+class ApplicationRequest (
     val id: Int,
     val idApoderado: Int,
     val status: String,
-    val scholarshipId: Int,
-    val postulante: Postulante,
-    val postulante_dni: String,
-    val postulante_libreta_notas: String,
-    val postulante_const_logro_aprendizaje: String,
-    val apoderado_dni: String,
-    val apoderado_declaracion_jurada: String
+    val scholarshipName: String,
+    val postulante: Postulante
 ) {
     data class Postulante(
         val nombres: String,
@@ -34,4 +29,5 @@ public class Application (
         val provincia: String,
         val distrito: String
     )
+
 }

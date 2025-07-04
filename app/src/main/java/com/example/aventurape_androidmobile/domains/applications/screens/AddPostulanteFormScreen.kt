@@ -36,6 +36,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.aventurape_androidmobile.domains.applications.models.Application
+import com.example.aventurape_androidmobile.domains.applications.models.ApplicationRequest
 import com.example.aventurape_androidmobile.domains.applications.viewModels.HomeApplicationsViewModel
 import com.example.aventurape_androidmobile.shared.components.Drawer
 import com.example.aventurape_androidmobile.shared.components.TopBar
@@ -368,16 +369,16 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
                 Button(
                     onClick = {
                         // Crear el objeto Postulante
-                        val postulante = Application.Postulante(
+                        val postulante = ApplicationRequest.Postulante(
                             nombres = nameInput,
                             apellidos = lastNamesInput,
                             dni = dniInput.toIntOrNull() ?: 0,
                             fechaNacimiento = birthdayInput,
-                            contacto = Application.ContactoPostulante(
+                            contacto = ApplicationRequest.ContactoPostulante(
                                 correo = emailInput,
                                 celular = phoneInput.toIntOrNull() ?: 0
                             ),
-                            centroEstudios = Application.CentroEstudios(
+                            centroEstudios = ApplicationRequest.CentroEstudios(
                                 nombre = schoolNameInput,
                                 tipo = schoolTypeInput,
                                 nivel = schoolLevelInput,
@@ -388,11 +389,11 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
                         )
 
                         // Crear el objeto Application completo
-                        val application = Application(
+                        val application = ApplicationRequest(
                             id = 0, // El backend probablemente asignará un ID
                             idApoderado = userId.toInt(), // Usar el ID del usuario logeado
                             status = "SINENVIAR", // Estado inicial
-                            tipoBeca = scholarshipTypeInput,
+                            scholarshipName = scholarshipTypeInput,
                             postulante = postulante
                         )
 
@@ -418,16 +419,16 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
                 Button(
                     onClick = {
                         // Crear el objeto Postulante
-                        val postulante = Application.Postulante(
+                        val postulante = ApplicationRequest.Postulante(
                             nombres = nameInput,
                             apellidos = lastNamesInput,
                             dni = dniInput.toIntOrNull() ?: 0,
                             fechaNacimiento = birthdayInput,
-                            contacto = Application.ContactoPostulante(
+                            contacto = ApplicationRequest.ContactoPostulante(
                                 correo = emailInput,
                                 celular = phoneInput.toIntOrNull() ?: 0
                             ),
-                            centroEstudios = Application.CentroEstudios(
+                            centroEstudios = ApplicationRequest.CentroEstudios(
                                 nombre = schoolNameInput,
                                 tipo = schoolTypeInput,
                                 nivel = schoolLevelInput,
@@ -438,11 +439,11 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
                         )
 
                         // Crear el objeto Application completo
-                        val application = Application(
+                        val application = ApplicationRequest(
                             id = 0, // El backend probablemente asignará un ID
                             idApoderado = userId.toInt(), // Usar el ID del usuario logeado
                             status = "PENDIENTE", // Estado inicial
-                            tipoBeca = scholarshipTypeInput,
+                            scholarshipName = scholarshipTypeInput,
                             postulante = postulante
                         )
 

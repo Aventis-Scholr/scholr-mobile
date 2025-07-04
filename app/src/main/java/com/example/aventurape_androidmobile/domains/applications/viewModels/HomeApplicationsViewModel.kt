@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.aventurape_androidmobile.domains.applications.models.Application
+import com.example.aventurape_androidmobile.domains.applications.models.ApplicationRequest
 import com.example.aventurape_androidmobile.domains.applications.models.DataApoderado
 import com.example.aventurape_androidmobile.domains.applications.states.HomeApplicationsState
 import com.example.aventurape_androidmobile.utils.RetrofitClient
@@ -65,7 +66,7 @@ class HomeApplicationsViewModel : ViewModel(){
     }
 
     // Función para crear una nueva aplicación
-    fun createApplication(application: Application, apoderadoId: Long) {
+    fun createApplication(application: ApplicationRequest, apoderadoId: Long) {
         viewModelScope.launch {
             state = state.copy(isLoading = true)
             try {
@@ -89,7 +90,7 @@ class HomeApplicationsViewModel : ViewModel(){
         }
     }
 
-    fun updateApplication(application: Application, id: Long) {
+    fun updateApplication(application: ApplicationRequest, id: Long) {
         viewModelScope.launch {
             state = state.copy(isLoading = true)
             try {

@@ -29,4 +29,6 @@ class HomeScholarshipsViewModel : ViewModel() {
             }
         }
     }
+
+
 }
