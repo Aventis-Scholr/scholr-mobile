@@ -1,6 +1,9 @@
 package com.example.aventurape_androidmobile.domains.applications.screens
 
 import android.content.Context
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -77,6 +80,43 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
     // Obtener el ID del usuario logeado
     val userId = PreferenceManager.getUserId(context)
 
+    //parte para archivo------------------
+    var postulante_dni by remember { mutableStateOf<Uri?>(null) }
+    val launcher1 = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        postulante_dni = uri
+    }
+
+    var postulante_libreta_notas by remember { mutableStateOf<Uri?>(null) }
+    val launcher2 = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        postulante_libreta_notas = uri
+    }
+
+    var postulante_const_logro_aprendizaje by remember { mutableStateOf<Uri?>(null) }
+    val launcher3 = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        postulante_const_logro_aprendizaje = uri
+    }
+
+    var apoderado_dni by remember { mutableStateOf<Uri?>(null) }
+    val launcher4 = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        apoderado_dni = uri
+    }
+
+    var apoderado_declaracion_jurada by remember { mutableStateOf<Uri?>(null) }
+    val launcher5 = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        apoderado_declaracion_jurada = uri
+    }
+
+    //----------------------------------
 
     ModalNavigationDrawer(
         drawerState=drawerState,
@@ -365,6 +405,60 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
                 onValueChange = { schoolDistrictInput = it },
                 placeholder = { Text("Distrito") }
             )
+
+            // Botón para seleccionar archivo
+            Button(onClick = { launcher1.launch("*/*") }, modifier = Modifier
+                .padding(vertical = 5.dp)
+                .padding(horizontal = 100.dp)
+                .fillMaxWidth()) {
+                Text("dni del postulante")
+            }
+            if (postulante_dni != null) {
+                Text("Archivo seleccionado: ${postulante_dni?.lastPathSegment}")
+            }
+
+            Button(onClick = { launcher2.launch("*/*") }, modifier = Modifier
+                .padding(vertical = 5.dp)
+                .padding(horizontal = 100.dp)
+                .fillMaxWidth()) {
+                Text("libre de notas del postulante")
+            }
+            if (postulante_libreta_notas != null) {
+                Text("Archivo seleccionado: ${postulante_libreta_notas?.lastPathSegment}")
+            }
+
+            Button(onClick = { launcher3.launch("*/*") }, modifier = Modifier
+                .padding(vertical = 5.dp)
+                .padding(horizontal = 100.dp)
+                .fillMaxWidth()) {
+                Text("constancia de logro de aprendizaje del postulante")
+            }
+            if (postulante_const_logro_aprendizaje != null) {
+                Text("Archivo seleccionado: ${postulante_const_logro_aprendizaje?.lastPathSegment}")
+            }
+
+            Button(onClick = { launcher4.launch("*/*") }, modifier = Modifier
+                .padding(vertical = 5.dp)
+                .padding(horizontal = 100.dp)
+                .fillMaxWidth()) {
+                Text("dni del apoderado")
+            }
+            if (apoderado_dni != null) {
+                Text("Archivo seleccionado: ${apoderado_dni?.lastPathSegment}")
+            }
+
+            Button(onClick = { launcher5.launch("*/*") }, modifier = Modifier
+                .padding(vertical = 5.dp)
+                .padding(horizontal = 100.dp)
+                .fillMaxWidth()) {
+                Text("declaración jurada")
+            }
+            if (apoderado_declaracion_jurada != null) {
+                Text("Archivo seleccionado: ${apoderado_declaracion_jurada?.lastPathSegment}")
+            }
+
+            //--------------------------------
+
                 // Botón para guardar
                 Button(
                     onClick = {
