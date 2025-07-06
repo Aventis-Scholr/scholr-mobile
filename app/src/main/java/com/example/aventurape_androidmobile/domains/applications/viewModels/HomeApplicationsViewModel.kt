@@ -1,5 +1,6 @@
 package com.example.aventurape_androidmobile.domains.applications.viewModels
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -78,8 +79,11 @@ class HomeApplicationsViewModel : ViewModel(){
                 val response = RetrofitClient.placeholder.createApplication(application, apoderadoId)
                 if (response.isSuccessful) {
                     createApplicationSuccess = true
-                    state = state.copy(isLoading = false)
+
+                    state = state.copy(isLoading = false,
+                        applicationResponse = response.body())
                     getApplicationsByApoderadoId(application.idApoderado.toLong())
+
                 } else {
                     state = state.copy(
                         errorMessage = "Error ${response.code()}: Failed to create application",
@@ -207,6 +211,7 @@ class HomeApplicationsViewModel : ViewModel(){
         apoderadoDeclaracionJurada: MultipartBody.Part,
         onResult: (Boolean, String?) -> Unit
     ) {
+        Log.d("AddPostulanteFormScreen", "View model cargar archivos correcto")
         val call = RetrofitClient.placeholder.uploadApplicationFiles(
             applicationId,
             postulanteDni,
@@ -219,6 +224,7 @@ class HomeApplicationsViewModel : ViewModel(){
         call.enqueue(object : Callback<ResponseBody> {
             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                 if (response.isSuccessful) {
+                    Log.d("AddPostulanteFormScreen", "View model cargar archivos correcto")
                     onResult(true, null)
                 } else {
                     onResult(false, "Error al subir archivos")

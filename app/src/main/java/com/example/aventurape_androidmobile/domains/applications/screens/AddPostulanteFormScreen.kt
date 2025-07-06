@@ -2,11 +2,13 @@ package com.example.aventurape_androidmobile.domains.applications.screens
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,6 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
@@ -23,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,7 +49,12 @@ import com.example.aventurape_androidmobile.shared.components.Drawer
 import com.example.aventurape_androidmobile.shared.components.TopBar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import java.io.InputStream
 import java.util.Date
+import kotlin.text.toLong
 
 @Composable
 fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController: NavHostController, context: Context)
@@ -114,6 +123,54 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         apoderado_declaracion_jurada = uri
+    }
+
+    //----------------------------------
+
+    fun uriToMultipartBodyPart(context: Context, uri: Uri?, partName: String): MultipartBody.Part? {
+        if (uri == null) return null
+        val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
+        val bytes = inputStream?.readBytes() ?: return null
+        val requestBody = RequestBody.create("application/octet-stream".toMediaTypeOrNull(), bytes)
+        return MultipartBody.Part.createFormData(partName, "file", requestBody)
+    }
+
+    LaunchedEffect(viewModel.state.applicationResponse) {
+        viewModel.state.applicationResponse?.let {
+            Log.d("AddPostulanteFormScreen", "Application creada con id: ${it.id}")
+
+            val partDni = uriToMultipartBodyPart(context, postulante_dni, "postulante_dni")
+            val partLibreta = uriToMultipartBodyPart(context, postulante_libreta_notas, "postulante_libreta_notas")
+            val partConstancia = uriToMultipartBodyPart(context, postulante_const_logro_aprendizaje, "postulante_const_logro_aprendizaje")
+            val partApoderadoDni = uriToMultipartBodyPart(context, apoderado_dni, "apoderado_dni")
+            val partDeclaracion = uriToMultipartBodyPart(context, apoderado_declaracion_jurada, "apoderado_declaracion_jurada")
+
+
+            if (partDni != null && partLibreta != null && partConstancia != null && partApoderadoDni != null && partDeclaracion != null) {
+                viewModel.viewModelScope.launch(Dispatchers.IO) {
+                    viewModel.uploadApplicationFiles(
+                        it.id.toLong(),
+                        partDni,
+                        partLibreta,
+                        partConstancia,
+                        partApoderadoDni,
+                        partDeclaracion
+                    ) { success, errorMessage ->
+                        if (success) {
+                            Log.d("AddPostulanteFormScreen", "Archivos subidos correctamente")
+                            navController.popBackStack()
+                            navController.popBackStack()
+                        } else {
+                            Log.e("AddPostulanteFormScreen", "Error al subir archivos: $errorMessage")
+                            // Aquí puedes mostrar el error al usuario
+                        }
+                    }
+                }
+            } else {
+                Log.e("AddPostulanteFormScreen", "Faltan archivos por adjuntar")
+                // Aquí puedes mostrar un mensaje al usuario si lo deseas
+            }
+        }
     }
 
     //----------------------------------
@@ -406,55 +463,159 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
                 placeholder = { Text("Distrito") }
             )
 
+            Text("Adjuntar documentos",
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .padding(top = 20.dp, bottom = 10.dp),
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                color = Color.Blue
+            )
+
+            Text("DNI del postulante",
+                modifier = Modifier
+                    .padding(horizontal = 45.dp)
+                    .padding(top = 10.dp),
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp
+            )
+
             // Botón para seleccionar archivo
-            Button(onClick = { launcher1.launch("*/*") }, modifier = Modifier
-                .padding(vertical = 5.dp)
-                .padding(horizontal = 100.dp)
-                .fillMaxWidth()) {
-                Text("dni del postulante")
-            }
-            if (postulante_dni != null) {
-                Text("Archivo seleccionado: ${postulante_dni?.lastPathSegment}")
-            }
-
-            Button(onClick = { launcher2.launch("*/*") }, modifier = Modifier
-                .padding(vertical = 5.dp)
-                .padding(horizontal = 100.dp)
-                .fillMaxWidth()) {
-                Text("libre de notas del postulante")
-            }
-            if (postulante_libreta_notas != null) {
-                Text("Archivo seleccionado: ${postulante_libreta_notas?.lastPathSegment}")
-            }
-
-            Button(onClick = { launcher3.launch("*/*") }, modifier = Modifier
-                .padding(vertical = 5.dp)
-                .padding(horizontal = 100.dp)
-                .fillMaxWidth()) {
-                Text("constancia de logro de aprendizaje del postulante")
-            }
-            if (postulante_const_logro_aprendizaje != null) {
-                Text("Archivo seleccionado: ${postulante_const_logro_aprendizaje?.lastPathSegment}")
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 5.dp, horizontal = 50.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button(
+                    onClick = { launcher1.launch("*/*") },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF4C542))
+                ) {
+                    Text("Adjuntar", color = Color.Black)
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                if (postulante_dni != null) {
+                    Text(
+                        "Archivo: ${postulante_dni?.lastPathSegment}",
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                }
             }
 
-            Button(onClick = { launcher4.launch("*/*") }, modifier = Modifier
-                .padding(vertical = 5.dp)
-                .padding(horizontal = 100.dp)
-                .fillMaxWidth()) {
-                Text("dni del apoderado")
-            }
-            if (apoderado_dni != null) {
-                Text("Archivo seleccionado: ${apoderado_dni?.lastPathSegment}")
+            Text("Libreta de notas del postulante",
+                modifier = Modifier
+                    .padding(horizontal = 45.dp)
+                    .padding(top = 10.dp),
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 5.dp, horizontal = 50.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button(
+                    onClick = { launcher2.launch("*/*") },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF4C542))
+                ) {
+                    Text("Adjuntar", color = Color.Black)
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                if (postulante_libreta_notas != null) {
+                    Text(
+                        "Archivo: ${postulante_libreta_notas?.lastPathSegment}",
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                }
             }
 
-            Button(onClick = { launcher5.launch("*/*") }, modifier = Modifier
-                .padding(vertical = 5.dp)
-                .padding(horizontal = 100.dp)
-                .fillMaxWidth()) {
-                Text("declaración jurada")
+            Text("Constancia de logro de aprendizaje del postulante",
+                modifier = Modifier
+                    .padding(horizontal = 45.dp)
+                    .padding(top = 10.dp),
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 5.dp, horizontal = 50.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button(
+                    onClick = { launcher3.launch("*/*") },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF4C542))
+                ) {
+                    Text("Adjuntar", color = Color.Black)
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                if (postulante_const_logro_aprendizaje != null) {
+                    Text(
+                        "Archivo: ${postulante_const_logro_aprendizaje?.lastPathSegment}",
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                }
             }
-            if (apoderado_declaracion_jurada != null) {
-                Text("Archivo seleccionado: ${apoderado_declaracion_jurada?.lastPathSegment}")
+
+            Text("DNI del apoderado",
+                modifier = Modifier
+                    .padding(horizontal = 45.dp)
+                    .padding(top = 10.dp),
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 5.dp, horizontal = 50.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button(
+                    onClick = { launcher4.launch("*/*") },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF4C542))
+                ) {
+                    Text("Adjuntar", color = Color.Black)
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                if (apoderado_dni != null) {
+                    Text(
+                        "Archivo: ${apoderado_dni?.lastPathSegment}",
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                }
+            }
+
+            Text("Declaración jurada",
+                modifier = Modifier
+                    .padding(horizontal = 45.dp)
+                    .padding(top = 10.dp),
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 5.dp, horizontal = 50.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button(
+                    onClick = { launcher5.launch("*/*") },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF4C542))
+                ) {
+                    Text("Adjuntar", color = Color.Black)
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                if (apoderado_declaracion_jurada != null) {
+                    Text(
+                        "Archivo: ${apoderado_declaracion_jurada?.lastPathSegment}",
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                }
             }
 
             //--------------------------------
@@ -499,8 +660,8 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
 
 
                         // Navegar de regreso
-                        navController.popBackStack()
-                        navController.popBackStack()
+                        //navController.popBackStack()
+                        //navController.popBackStack()
                     },
                     modifier = Modifier
                         .padding(vertical = 20.dp)
@@ -546,11 +707,9 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
                             viewModel.createApplication(application, userId)
                         }
 
-
-
                         // Navegar de regreso
-                        navController.popBackStack()
-                        navController.popBackStack()
+                        //navController.popBackStack()
+                        //navController.popBackStack()
                     },
                     modifier = Modifier
                         .padding(vertical = 20.dp)

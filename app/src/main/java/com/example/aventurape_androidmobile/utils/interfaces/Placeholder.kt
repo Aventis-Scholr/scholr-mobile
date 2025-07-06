@@ -78,7 +78,7 @@ interface Placeholder {
     @POST("applications/apoderado/{apoderadoId}")
     suspend fun createApplication(
         @Body application: ApplicationRequest, @Path("apoderadoId") apoderadoId: Long
-    ): Response<Void>
+    ): Response<Application>
 
     @PUT("applications/{id}")
     suspend fun updateApplication(
