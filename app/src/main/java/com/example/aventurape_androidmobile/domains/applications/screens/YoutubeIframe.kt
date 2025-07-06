@@ -10,7 +10,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 
 @Composable
 fun YouTubeIframe(videoId: String) {
-    val videoUrl = "https://www.youtube.com/embed/$videoId"
+    val html = """
+        <html>
+        <body style="margin:0">
+            <iframe width="100%" height="100%" 
+                src="https://www.youtube.com/embed/$videoId" 
+                frameborder="0" allowfullscreen></iframe>
+        </body>
+        </html>
+    """.trimIndent()
     AndroidView(
         modifier = Modifier
             .fillMaxWidth()
@@ -18,7 +26,18 @@ fun YouTubeIframe(videoId: String) {
         factory = { context ->
             WebView(context).apply {
                 settings.javaScriptEnabled = true
-                loadUrl(videoUrl)
+                settings.domStorageEnabled = true
+                settings.allowContentAccess = true
+                settings.mediaPlaybackRequiresUserGesture = false
+                // Permitir contenido mixto si es necesario
+                settings.mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+                loadDataWithBaseURL(
+                    null,
+                    html,
+                    "text/html",
+                    "UTF-8",
+                    null
+                )
             }
         }
     )

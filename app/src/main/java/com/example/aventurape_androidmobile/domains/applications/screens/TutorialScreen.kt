@@ -93,13 +93,13 @@ fun TutorialScreen(viewModel: HomeApplicationsViewModel, navController: NavHostC
                 )
 
                 Column(modifier = Modifier.padding(start = 8.dp)) {
-                    Text(text = "\uD83D\uDCE7 Gmail: contacto@aventurape.com")
+                    Text(text = "\uD83D\uDCE7 Gmail: contacto@scholr.com")
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(text = "\uD83D\uDCF1 WhatsApp: +51 987 654 321")
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text(text = "\uD83D\uDCF8 Instagram: @aventurape")
+                    Text(text = "\uD83D\uDCF8 Instagram: @scholr")
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text(text = "\uD83C\uDFB5 TikTok: @aventurape")
+                    Text(text = "\uD83C\uDFB5 TikTok: @scholr")
                 }
             }
         }
