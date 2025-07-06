@@ -37,6 +37,7 @@ import com.example.aventurape_androidmobile.domains.applications.screens.HomeApp
 import com.example.aventurape_androidmobile.domains.applications.screens.InstruccionesBecaScreen
 import com.example.aventurape_androidmobile.domains.applications.screens.SelectPostulacionScreen
 import com.example.aventurape_androidmobile.domains.applications.screens.TutorialScreen
+import com.example.aventurape_androidmobile.domains.applications.screens.UploadDocumentsScreen
 import com.example.aventurape_androidmobile.domains.applications.viewModels.HomeApplicationsViewModel
 import com.example.aventurape_androidmobile.domains.management.screens.HomeScholarshipsScreen
 import com.example.aventurape_androidmobile.domains.management.screens.viewModels.HomeScholarshipsViewModel
@@ -68,7 +69,7 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
 
         composable(NavScreenAdventurer.company_selecction_sscreen.name) {
             val viewModel: LoginViewModel = viewModel()
-            CompanySelectionScreen( viewModel = signUpViewModel,navController = navController)
+            CompanySelectionScreen(viewModel = signUpViewModel, navController = navController)
         }
 
         composable(NavScreenAdventurer.select_role_screen.name) {
@@ -83,7 +84,11 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
 
         composable(NavScreenAdventurer.bandeja_apoderado_screen.name) { //HOME
             if (userRole != null && userRole!!.contains(Roles.ROLE_APODERADO.name)) {
-                HomeApplicationsScreen(viewModel = homeApplicationsViewModel, navController = navController, context)
+                HomeApplicationsScreen(
+                    viewModel = homeApplicationsViewModel,
+                    navController = navController,
+                    context
+                )
             } else {
                 // Handle unauthorized access or redirect
                 navController.navigate(NavScreenAdventurer.error_screen.name)
@@ -97,23 +102,37 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
         }
 
         composable(NavScreenAdventurer.select_postulacion_screen.name) { //HOME
-            SelectPostulacionScreen(viewModel = homeApplicationsViewModel, navController = navController)
+            SelectPostulacionScreen(
+                viewModel = homeApplicationsViewModel,
+                navController = navController
+            )
 
         }
 
         composable(NavScreenAdventurer.data_apoderado_form_screen.name) { //HOME
-            DataApoderadoFormScreen(viewModel = homeApplicationsViewModel, navController = navController, context)
+            DataApoderadoFormScreen(
+                viewModel = homeApplicationsViewModel,
+                navController = navController,
+                context
+            )
         }
 
 
         composable(NavScreenAdventurer.add_postulante_form_screen.name) {
-            AddPostulanteFormScreen(viewModel = homeApplicationsViewModel, navController = navController, context)
+                AddPostulanteFormScreen(
+                viewModel = homeApplicationsViewModel,
+                navController = navController,
+                context
+                )
         }
 
         composable(NavScreenAdventurer.edit_postulante_form_screen.name) {
-            EditPostulanteFormScreen(viewModel = homeApplicationsViewModel, navController = navController, context)
+            EditPostulanteFormScreen(
+                viewModel = homeApplicationsViewModel,
+                navController = navController,
+                context
+            )
         }
-
 
         composable(NavScreenAdventurer.cartilla_instrucciones.name) {
             InstruccionesBecaScreen(navController = navController)
@@ -125,7 +144,10 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
 
         composable(NavScreenAdventurer.home_adventurer_screen.name) { //HOME
             if (userRole != null && userRole!!.contains(Roles.ROLE_ADVENTUROUS.name)) {
-                HomeAdventurerScreen(viewModel = homeAdventurerViewModel, navController = navController)
+                HomeAdventurerScreen(
+                    viewModel = homeAdventurerViewModel,
+                    navController = navController
+                )
             } else {
                 // Handle unauthorized access or redirect
                 navController.navigate(NavScreenAdventurer.error_screen.name)
@@ -139,7 +161,10 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
                 val homeScholarshipsViewModel: HomeScholarshipsViewModel = viewModel()
 
                 // Pasar el viewModel correcto a la pantalla
-                HomeScholarshipsScreen(viewModel = homeScholarshipsViewModel, navController = navController)
+                HomeScholarshipsScreen(
+                    viewModel = homeScholarshipsViewModel,
+                    navController = navController
+                )
             } else {
                 // Handle unauthorized access or redirect
                 navController.navigate(NavScreenAdventurer.error_screen.name)
@@ -153,8 +178,12 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
             if (userRole != null && userRole!!.isNotEmpty()) {
                 when (userRole!![0]) {
                     Roles.ROLE_ADVENTUROUS.name -> {
-                        AdventureScreen(viewModel = adventureViewModel, navController = navController)
+                        AdventureScreen(
+                            viewModel = adventureViewModel,
+                            navController = navController
+                        )
                     }
+
                     else -> {
                         // Handle other roles or redirect
                         navController.navigate(NavScreenAdventurer.error_screen.name)
@@ -175,7 +204,11 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
         }
         composable(NavScreenAdventurer.account_infomation_adventurer_screen.name) { //PROFILE
             if (userRole != null && userRole!!.contains(Roles.ROLE_ADVENTUROUS.name)) {
-                AccountInformationA(navController = navController, viewModelA = profileViewModelA, userId = PreferenceManager.getUserId(context))
+                AccountInformationA(
+                    navController = navController,
+                    viewModelA = profileViewModelA,
+                    userId = PreferenceManager.getUserId(context)
+                )
             } else {
                 // Handle unauthorized access or redirect
                 navController.navigate(NavScreenAdventurer.error_screen.name)
@@ -184,7 +217,10 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
         composable(NavScreenAdventurer.favorite_publication_adventurer_screen.name) { //FAV PUBLICATIONS
             if (userRole != null && userRole!!.contains(Roles.ROLE_ADVENTUROUS.name)) {
                 Log.d("FavoritePublications", "Entered FavoritePublicationsAdventurerScreen")
-                FavoritePublicationsAdventurerScreen(navController = navController, profileId = PreferenceManager.getUserId(context))
+                FavoritePublicationsAdventurerScreen(
+                    navController = navController,
+                    profileId = PreferenceManager.getUserId(context)
+                )
             } else {
                 // Handle unauthorized access or redirect
                 navController.navigate(NavScreenAdventurer.error_screen.name)
@@ -193,25 +229,31 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
 
         // Detalle de aventura
         composable("detail_adventure/{adventureId}") { backStackEntry ->
-        val adventureId = backStackEntry.arguments?.getString("adventureId")?.toLongOrNull()
-        Log.d("AventureId", "detail_adventure/${adventureId}")  // Agrega esta línea
-        Log.d("List Adventures", adventureViewModel.listaAdventures.toString())
-        val adventure = adventureViewModel.listaAdventures.find { it.Id == adventureId }
-        adventure?.let { adventureDetail ->
-            DetailView(navController = navController, adventure = adventureDetail, viewModel = adventureViewModel)
-        } ?: run {
-            println("Adventure not found for ID: $adventureId")
+            val adventureId = backStackEntry.arguments?.getString("adventureId")?.toLongOrNull()
+            Log.d("AventureId", "detail_adventure/${adventureId}")  // Agrega esta línea
+            Log.d("List Adventures", adventureViewModel.listaAdventures.toString())
+            val adventure = adventureViewModel.listaAdventures.find { it.Id == adventureId }
+            adventure?.let { adventureDetail ->
+                DetailView(
+                    navController = navController,
+                    adventure = adventureDetail,
+                    viewModel = adventureViewModel
+                )
+            } ?: run {
+                println("Adventure not found for ID: $adventureId")
+            }
         }
-    }
 
         //------enterpreneur screens
         composable(NavScreenAdventurer.adventure_publication_management.name) { //homescreen
             userRole = PreferenceManager.getUserRoles(context);
-            if(userRole != null){
-                if(userRole!![0] == Roles.ROLE_ENTREPRENEUR.name){
-                    AppPublicationManagement(navController = navController, entrepreneurId = PreferenceManager.getUserId(context))
-                }
-                else{
+            if (userRole != null) {
+                if (userRole!![0] == Roles.ROLE_ENTREPRENEUR.name) {
+                    AppPublicationManagement(
+                        navController = navController,
+                        entrepreneurId = PreferenceManager.getUserId(context)
+                    )
+                } else {
                     // Mostrar pantalla de error o redirigir
                     //navController.navigate(NavScreenAdventurer.error_screen.name)
                 }
@@ -235,7 +277,11 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
         }
         composable(NavScreenAdventurer.account_infomation_entrepreneur_screen.name) { //PROFILE
             if (userRole != null && userRole!!.contains(Roles.ROLE_ENTREPRENEUR.name)) {
-                AccountInformationE(navController = navController, viewModelE = profileViewModelE,userId = PreferenceManager.getUserId(context))
+                AccountInformationE(
+                    navController = navController,
+                    viewModelE = profileViewModelE,
+                    userId = PreferenceManager.getUserId(context)
+                )
             } else {
                 // Handle unauthorized access or redirect
                 navController.navigate(NavScreenAdventurer.error_screen.name)
@@ -245,6 +291,23 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
         // Pantalla de error en caso de rol incorrecto
         composable(NavScreenAdventurer.error_screen.name) {
             ErrorScreen(navController = navController)
+        }
+
+        composable(
+            "uploadDocuments/{applicationId}"
+        ) { backStackEntry ->
+            val applicationId = backStackEntry.arguments?.getString("applicationId")?.toLongOrNull()
+            if (applicationId != null) {
+                UploadDocumentsScreen(
+                    navController = navController,
+                    applicationId = applicationId,
+                    viewModel = homeApplicationsViewModel,
+                    context = context
+                )
+            } else {
+                // Manejar error o navegación alternativa
+                navController.navigate(NavScreenAdventurer.error_screen.name)
+            }
         }
     }
 }

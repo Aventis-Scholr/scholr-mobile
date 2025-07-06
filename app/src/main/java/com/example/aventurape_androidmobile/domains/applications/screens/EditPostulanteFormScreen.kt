@@ -76,6 +76,12 @@ fun EditPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController
     //var scholarshipTypeInput by remember { mutableStateOf(viewModel.applicationToEdit.scholarshipName) }
     var scholarshipTypeInput by remember { mutableStateOf("") }
 
+    var dniPdfFileName by remember { mutableStateOf("") }
+    var partidaNacimientoFileName by remember { mutableStateOf("") }
+    var matriculaFileName by remember { mutableStateOf("") }
+    var reciboServiciosFileName by remember { mutableStateOf("") }
+    var fotoCarnetFileName by remember { mutableStateOf("") }
+
     // Obtener el ID del usuario logeado
     val userId = PreferenceManager.getUserId(context)
 
@@ -367,7 +373,6 @@ fun EditPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController
                 onValueChange = { schoolDistrictInput = it },
                 placeholder = { Text("Distrito") }
             )
-
 
             // Botón para guardar
             Button(

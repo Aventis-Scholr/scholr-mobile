@@ -1,5 +1,7 @@
 package com.example.aventurape_androidmobile.domains.applications.viewModels
 
+import android.net.Uri
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -11,7 +13,9 @@ import com.example.aventurape_androidmobile.domains.applications.models.Applicat
 import com.example.aventurape_androidmobile.domains.applications.models.DataApoderado
 import com.example.aventurape_androidmobile.domains.applications.states.HomeApplicationsState
 import com.example.aventurape_androidmobile.utils.RetrofitClient
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -20,6 +24,28 @@ import retrofit2.Response
 
 
 class HomeApplicationsViewModel : ViewModel(){
+
+    // Estado del formulario
+    var nameInput = mutableStateOf("")
+    var lastNamesInput = mutableStateOf("")
+    var dniInput = mutableStateOf("")
+    var birthdayInput = mutableStateOf("")
+    var emailInput = mutableStateOf("")
+    var phoneInput = mutableStateOf("")
+    var schoolNameInput = mutableStateOf("")
+    var schoolTypeInput = mutableStateOf("")
+    var schoolLevelInput = mutableStateOf("")
+    var schoolDepartmentInput = mutableStateOf("")
+    var schoolProvinceInput = mutableStateOf("")
+    var schoolDistrictInput = mutableStateOf("")
+    var scholarshipTypeInput = mutableStateOf("")
+
+    val postulanteDniUri = mutableStateOf<Uri?>(null)
+    val postulanteLibretaNotasUri = mutableStateOf<Uri?>(null)
+    val postulanteConstLogroAprendizajeUri = mutableStateOf<Uri?>(null)
+    val apoderadoDniUri = mutableStateOf<Uri?>(null)
+    val apoderadoDeclaracionJuradaUri = mutableStateOf<Uri?>(null)
+
     var state by mutableStateOf(HomeApplicationsState())
         private set
 
@@ -71,24 +97,37 @@ class HomeApplicationsViewModel : ViewModel(){
     }
 
     // Función para crear una nueva aplicación
-    fun createApplication(application: ApplicationRequest, apoderadoId: Long) {
+    fun createApplication(
+        application: ApplicationRequest,
+        apoderadoId: Long,
+        onSuccessNavigation: (Long) -> Unit
+    ) {
         viewModelScope.launch {
             state = state.copy(isLoading = true)
             try {
                 val response = RetrofitClient.placeholder.createApplication(application, apoderadoId)
                 if (response.isSuccessful) {
-                    createApplicationSuccess = true
-                    state = state.copy(isLoading = false)
-                    getApplicationsByApoderadoId(application.idApoderado.toLong())
+                    val createdApplication = response.body()
+                    if (createdApplication != null) {
+                        applicationToEdit = createdApplication
+                        createApplicationSuccess = true
+                        state = state.copy(isLoading = false)
+                        // Ejecutar navegación en hilo principal
+                        withContext(Dispatchers.Main) {
+                            onSuccessNavigation(createdApplication.id.toLong())
+                        }
+                    } else {
+                        state = state.copy(errorMessage = "Respuesta vacía del servidor", isLoading = false)
+                    }
                 } else {
                     state = state.copy(
-                        errorMessage = "Error ${response.code()}: Failed to create application",
+                        errorMessage = "Error ${response.code()}: no se pudo crear la postulación",
                         isLoading = false
                     )
                 }
             } catch (e: Exception) {
                 state = state.copy(
-                    errorMessage = "Exception: ${e.localizedMessage}",
+                    errorMessage = "Excepción: ${e.localizedMessage}",
                     isLoading = false
                 )
             }
@@ -231,4 +270,25 @@ class HomeApplicationsViewModel : ViewModel(){
         })
     }
 
+    fun uploadArchivosPostulacionCompleta(
+        applicationId: Long,
+        archivos: List<MultipartBody.Part>,
+        onResult: (Boolean, String?) -> Unit
+    ) {
+        val call = RetrofitClient.placeholder.uploadArchivosPostulacionCompleta(applicationId, archivos)
+
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    onResult(true, null)
+                } else {
+                    onResult(false, "Error ${response.code()}: al subir archivos")
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                onResult(false, t.localizedMessage ?: "Error desconocido al subir archivos")
+            }
+        })
+    }
 }

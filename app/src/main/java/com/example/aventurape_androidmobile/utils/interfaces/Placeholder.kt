@@ -78,7 +78,7 @@ interface Placeholder {
     @POST("applications/apoderado/{apoderadoId}")
     suspend fun createApplication(
         @Body application: ApplicationRequest, @Path("apoderadoId") apoderadoId: Long
-    ): Response<Void>
+    ): Response<Application>
 
     @PUT("applications/{id}")
     suspend fun updateApplication(
@@ -207,4 +207,10 @@ interface Placeholder {
         @Path("entrepreneurId") entrepreneurId: Long
     ): Response<List<PublicationByOrderResponse>>
 
+    @Multipart
+    @POST("applications/{id}/upload-all")
+    fun uploadArchivosPostulacionCompleta(
+        @Path("id") applicationId: Long,
+        @Part archivos: List<MultipartBody.Part>
+    ): Call<ResponseBody>
 }

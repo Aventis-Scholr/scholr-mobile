@@ -40,12 +40,14 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.aventurape_androidmobile.domains.applications.models.Application
 import com.example.aventurape_androidmobile.domains.applications.models.ApplicationRequest
+import com.example.aventurape_androidmobile.domains.applications.screens.components.uriToMultipartPart
 import com.example.aventurape_androidmobile.domains.applications.viewModels.HomeApplicationsViewModel
 import com.example.aventurape_androidmobile.shared.components.Drawer
 import com.example.aventurape_androidmobile.shared.components.TopBar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Date
+
 
 @Composable
 fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController: NavHostController, context: Context)
@@ -56,65 +58,26 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
     )
     val scope= rememberCoroutineScope()
 
-    // Datos del postulante
-    var nameInput by remember { mutableStateOf("") }
-    var lastNamesInput by remember { mutableStateOf("") }
-    var dniInput by remember { mutableStateOf("") }
-    var birthdayInput by remember { mutableStateOf("") }
-
-    // Contacto del postulante
-    var emailInput by remember { mutableStateOf("") }
-    var phoneInput by remember { mutableStateOf("") }
-
-    // Centro de estudios
-    var schoolNameInput by remember { mutableStateOf("") }
-    var schoolTypeInput by remember { mutableStateOf("") }
-    var schoolLevelInput by remember { mutableStateOf("") }
-    var schoolDepartmentInput by remember { mutableStateOf("") }
-    var schoolProvinceInput by remember { mutableStateOf("") }
-    var schoolDistrictInput by remember { mutableStateOf("") }
-
-    // Tipo de beca
-    var scholarshipTypeInput by remember { mutableStateOf("") }
-
     // Obtener el ID del usuario logeado
     val userId = PreferenceManager.getUserId(context)
 
-    //parte para archivo------------------
-    var postulante_dni by remember { mutableStateOf<Uri?>(null) }
-    val launcher1 = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        postulante_dni = uri
-    }
+    // Datos del postulante
+    val nameInput by viewModel.nameInput
+    val lastNamesInput by viewModel.lastNamesInput
+    val dniInput by viewModel.dniInput
+    val birthdayInput by viewModel.birthdayInput
 
-    var postulante_libreta_notas by remember { mutableStateOf<Uri?>(null) }
-    val launcher2 = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        postulante_libreta_notas = uri
-    }
+    val emailInput by viewModel.emailInput
+    val phoneInput by viewModel.phoneInput
 
-    var postulante_const_logro_aprendizaje by remember { mutableStateOf<Uri?>(null) }
-    val launcher3 = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        postulante_const_logro_aprendizaje = uri
-    }
+    val schoolNameInput by viewModel.schoolNameInput
+    val schoolTypeInput by viewModel.schoolTypeInput
+    val schoolLevelInput by viewModel.schoolLevelInput
+    val schoolDepartmentInput by viewModel.schoolDepartmentInput
+    val schoolProvinceInput by viewModel.schoolProvinceInput
+    val schoolDistrictInput by viewModel.schoolDistrictInput
 
-    var apoderado_dni by remember { mutableStateOf<Uri?>(null) }
-    val launcher4 = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        apoderado_dni = uri
-    }
-
-    var apoderado_declaracion_jurada by remember { mutableStateOf<Uri?>(null) }
-    val launcher5 = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        apoderado_declaracion_jurada = uri
-    }
+    val scholarshipTypeInput by viewModel.scholarshipTypeInput
 
     //----------------------------------
 
@@ -174,7 +137,8 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
                     .padding(horizontal = 60.dp)
                     .background(Color.White),
                 value = scholarshipTypeInput,
-                onValueChange = { scholarshipTypeInput = it },
+                onValueChange = { nuevoValor ->
+                    viewModel.scholarshipTypeInput.value = nuevoValor },
                 placeholder = { Text("MERITO, DEPORTIVA, ECONOMICA, CULTURAL") }
             )
 
@@ -201,7 +165,8 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
                     .padding(horizontal = 60.dp)
                     .background(Color.White),
                 value = nameInput,
-                onValueChange = { nameInput = it },
+                onValueChange = { nuevoValor ->
+                    viewModel.nameInput.value = nuevoValor  },
                 placeholder = { Text("Ingrese sus Nombres") }
             )
 
@@ -218,7 +183,8 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
                     .padding(horizontal = 60.dp)
                     .background(Color.White),
                 value = lastNamesInput,
-                onValueChange = { lastNamesInput = it },
+                onValueChange = { nuevoValor ->
+                    viewModel.lastNamesInput.value = nuevoValor},
                 placeholder = { Text("Ingrese sus Apellidos") }
             )
 
@@ -235,7 +201,8 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
                     .padding(horizontal = 60.dp)
                     .background(Color.White),
                 value = dniInput,
-                onValueChange = { dniInput = it },
+                onValueChange = { nuevoValor ->
+                    viewModel.dniInput.value = nuevoValor },
                 placeholder = { Text("Ingrese su DNI") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
@@ -253,7 +220,8 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
                     .padding(horizontal = 60.dp)
                     .background(Color.White),
                 value = birthdayInput,
-                onValueChange = { birthdayInput = it },
+                onValueChange = { nuevoValor ->
+                    viewModel.birthdayInput.value = nuevoValor },
                 placeholder = { Text("YYYY-MM-DD") }
             )
 
@@ -280,7 +248,8 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
                     .padding(horizontal = 60.dp)
                     .background(Color.White),
                 value = emailInput,
-                onValueChange = { emailInput = it },
+                onValueChange = { nuevoValor ->
+                    viewModel.emailInput.value = nuevoValor },
                 placeholder = { Text("Ingrese su correo electrónico") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
             )
@@ -298,7 +267,8 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
                     .padding(horizontal = 60.dp)
                     .background(Color.White),
                 value = phoneInput,
-                onValueChange = { phoneInput = it },
+                onValueChange = { nuevoValor ->
+                    viewModel.phoneInput.value = nuevoValor },
                 placeholder = { Text("Ingrese su número de celular") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
             )
@@ -326,7 +296,8 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
                     .padding(horizontal = 60.dp)
                     .background(Color.White),
                 value = schoolNameInput,
-                onValueChange = { schoolNameInput = it },
+                onValueChange = { nuevoValor ->
+                    viewModel.schoolNameInput.value = nuevoValor },
                 placeholder = { Text("Ingrese el nombre del centro de estudios") }
             )
 
@@ -343,7 +314,8 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
                     .padding(horizontal = 60.dp)
                     .background(Color.White),
                 value = schoolTypeInput,
-                onValueChange = { schoolTypeInput = it },
+                onValueChange = { nuevoValor ->
+                    viewModel.schoolTypeInput.value = nuevoValor },
                 placeholder = { Text("Ej: Público, Privado") }
             )
 
@@ -360,7 +332,8 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
                     .padding(horizontal = 60.dp)
                     .background(Color.White),
                 value = schoolLevelInput,
-                onValueChange = { schoolLevelInput = it },
+                onValueChange = { nuevoValor ->
+                    viewModel.schoolLevelInput.value = nuevoValor },
                 placeholder = { Text("Ej: Inicial, Primaria, Secundaria") }
             )
 
@@ -380,7 +353,8 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
                     .padding(horizontal = 60.dp)
                     .background(Color.White),
                 value = schoolDepartmentInput,
-                onValueChange = { schoolDepartmentInput = it },
+                onValueChange = { nuevoValor ->
+                    viewModel.schoolDepartmentInput.value = nuevoValor },
                 placeholder = { Text("Departamento") }
             )
 
@@ -391,7 +365,8 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
                     .padding(horizontal = 60.dp)
                     .background(Color.White),
                 value = schoolProvinceInput,
-                onValueChange = { schoolProvinceInput = it },
+                onValueChange = { nuevoValor ->
+                    viewModel.schoolProvinceInput.value = nuevoValor },
                 placeholder = { Text("Provincia") }
             )
 
@@ -402,170 +377,153 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController:
                     .padding(horizontal = 60.dp)
                     .background(Color.White),
                 value = schoolDistrictInput,
-                onValueChange = { schoolDistrictInput = it },
+                onValueChange = { nuevoValor ->
+                    viewModel.schoolDistrictInput.value = nuevoValor },
                 placeholder = { Text("Distrito") }
             )
 
-            // Botón para seleccionar archivo
-            Button(onClick = { launcher1.launch("*/*") }, modifier = Modifier
-                .padding(vertical = 5.dp)
-                .padding(horizontal = 100.dp)
-                .fillMaxWidth()) {
-                Text("dni del postulante")
-            }
-            if (postulante_dni != null) {
-                Text("Archivo seleccionado: ${postulante_dni?.lastPathSegment}")
+            // Subir PDFs
+            Button(
+                onClick = {
+                    val postulante = ApplicationRequest.Postulante(
+                        nombres = nameInput,
+                        apellidos = lastNamesInput,
+                        dni = dniInput.toIntOrNull() ?: 0,
+                        fechaNacimiento = birthdayInput,
+                        contacto = ApplicationRequest.ContactoPostulante(
+                            correo = emailInput,
+                            celular = phoneInput.toIntOrNull() ?: 0
+                        ),
+                        centroEstudios = ApplicationRequest.CentroEstudios(
+                            nombre = schoolNameInput,
+                            tipo = schoolTypeInput,
+                            nivel = schoolLevelInput,
+                            departamento = schoolDepartmentInput,
+                            provincia = schoolProvinceInput,
+                            distrito = schoolDistrictInput
+                        )
+                    )
+
+                    val application = ApplicationRequest(
+                        id = 0,
+                        idApoderado = userId.toInt(),
+                        status = "SINENVIAR",
+                        scholarshipName = scholarshipTypeInput,
+                        postulante = postulante
+                    )
+
+                    viewModel.createApplication(
+                        application = application,
+                        apoderadoId = userId.toLong(),
+                        onSuccessNavigation = { applicationId ->
+                            // ✅ Aquí rediriges al subir archivos
+                            navController.navigate("uploadDocuments/$applicationId")
+                        }
+                    )
+                },
+                modifier = Modifier
+                    .padding(vertical = 20.dp)
+                    .padding(horizontal = 100.dp)
+                    .fillMaxWidth()
+            ) {
+                Text("Subir Archivos PDF")
             }
 
-            Button(onClick = { launcher2.launch("*/*") }, modifier = Modifier
-                .padding(vertical = 5.dp)
-                .padding(horizontal = 100.dp)
-                .fillMaxWidth()) {
-                Text("libre de notas del postulante")
-            }
-            if (postulante_libreta_notas != null) {
-                Text("Archivo seleccionado: ${postulante_libreta_notas?.lastPathSegment}")
-            }
-
-            Button(onClick = { launcher3.launch("*/*") }, modifier = Modifier
-                .padding(vertical = 5.dp)
-                .padding(horizontal = 100.dp)
-                .fillMaxWidth()) {
-                Text("constancia de logro de aprendizaje del postulante")
-            }
-            if (postulante_const_logro_aprendizaje != null) {
-                Text("Archivo seleccionado: ${postulante_const_logro_aprendizaje?.lastPathSegment}")
-            }
-
-            Button(onClick = { launcher4.launch("*/*") }, modifier = Modifier
-                .padding(vertical = 5.dp)
-                .padding(horizontal = 100.dp)
-                .fillMaxWidth()) {
-                Text("dni del apoderado")
-            }
-            if (apoderado_dni != null) {
-                Text("Archivo seleccionado: ${apoderado_dni?.lastPathSegment}")
-            }
-
-            Button(onClick = { launcher5.launch("*/*") }, modifier = Modifier
-                .padding(vertical = 5.dp)
-                .padding(horizontal = 100.dp)
-                .fillMaxWidth()) {
-                Text("declaración jurada")
-            }
-            if (apoderado_declaracion_jurada != null) {
-                Text("Archivo seleccionado: ${apoderado_declaracion_jurada?.lastPathSegment}")
-            }
 
             //--------------------------------
 
                 // Botón para guardar
-                Button(
-                    onClick = {
-                        // Crear el objeto Postulante
-                        val postulante = ApplicationRequest.Postulante(
-                            nombres = nameInput,
-                            apellidos = lastNamesInput,
-                            dni = dniInput.toIntOrNull() ?: 0,
-                            fechaNacimiento = birthdayInput,
-                            contacto = ApplicationRequest.ContactoPostulante(
-                                correo = emailInput,
-                                celular = phoneInput.toIntOrNull() ?: 0
-                            ),
-                            centroEstudios = ApplicationRequest.CentroEstudios(
-                                nombre = schoolNameInput,
-                                tipo = schoolTypeInput,
-                                nivel = schoolLevelInput,
-                                departamento = schoolDepartmentInput,
-                                provincia = schoolProvinceInput,
-                                distrito = schoolDistrictInput
-                            )
+            Button(
+                onClick = {
+                    val postulante = ApplicationRequest.Postulante(
+                        nombres = nameInput,
+                        apellidos = lastNamesInput,
+                        dni = dniInput.toIntOrNull() ?: 0,
+                        fechaNacimiento = birthdayInput,
+                        contacto = ApplicationRequest.ContactoPostulante(
+                            correo = emailInput,
+                            celular = phoneInput.toIntOrNull() ?: 0
+                        ),
+                        centroEstudios = ApplicationRequest.CentroEstudios(
+                            nombre = schoolNameInput,
+                            tipo = schoolTypeInput,
+                            nivel = schoolLevelInput,
+                            departamento = schoolDepartmentInput,
+                            provincia = schoolProvinceInput,
+                            distrito = schoolDistrictInput
                         )
+                    )
 
-                        // Crear el objeto Application completo
-                        val application = ApplicationRequest(
-                            id = 0, // El backend probablemente asignará un ID
-                            idApoderado = userId.toInt(), // Usar el ID del usuario logeado
-                            status = "SINENVIAR", // Estado inicial
-                            scholarshipName = scholarshipTypeInput,
-                            postulante = postulante
-                        )
+                    val application = ApplicationRequest(
+                        id = 0,
+                        idApoderado = userId.toInt(),
+                        status = "SINENVIAR",
+                        scholarshipName = scholarshipTypeInput,
+                        postulante = postulante
+                    )
 
-                        viewModel.viewModelScope.launch(Dispatchers.IO) {
-                            // Llamar al ViewModel para crear la aplicación
-                            viewModel.createApplication(application, userId)
+                    viewModel.viewModelScope.launch(Dispatchers.IO) {
+                        // Crear aplicación sin navegación, solo mostrar éxito o error
+                        viewModel.createApplication(application, userId) { createdApplicationId ->
+                            // Puedes usar createdApplicationId si quieres, o simplemente mostrar mensaje
+                            // En este caso, NO navegamos, solo cerrar formulario o mostrar mensaje
                         }
+                    }
 
+                    // Aquí no haces navegación ni popBackStack porque debe ser controlado en el callback o por el usuario
+                },
+                modifier = Modifier
+                    .padding(vertical = 20.dp)
+                    .padding(horizontal = 100.dp)
+                    .fillMaxWidth()
+            ) {
+                Text("Guardar Y Cerrar")
+            }
 
-
-                        // Navegar de regreso
-                        navController.popBackStack()
-                        navController.popBackStack()
-                    },
-                    modifier = Modifier
-                        .padding(vertical = 20.dp)
-                        .padding(horizontal = 100.dp)
-                        .fillMaxWidth()
-                ) {
-                    Text("Guardar Y Cerrar")
-                }
-
-                Button(
-                    onClick = {
-                        // Crear el objeto Postulante
-                        val postulante = ApplicationRequest.Postulante(
-                            nombres = nameInput,
-                            apellidos = lastNamesInput,
-                            dni = dniInput.toIntOrNull() ?: 0,
-                            fechaNacimiento = birthdayInput,
-                            contacto = ApplicationRequest.ContactoPostulante(
-                                correo = emailInput,
-                                celular = phoneInput.toIntOrNull() ?: 0
-                            ),
-                            centroEstudios = ApplicationRequest.CentroEstudios(
-                                nombre = schoolNameInput,
-                                tipo = schoolTypeInput,
-                                nivel = schoolLevelInput,
-                                departamento = schoolDepartmentInput,
-                                provincia = schoolProvinceInput,
-                                distrito = schoolDistrictInput
-                            )
+            Button(
+                onClick = {
+                    val postulante = ApplicationRequest.Postulante(
+                        nombres = nameInput,
+                        apellidos = lastNamesInput,
+                        dni = dniInput.toIntOrNull() ?: 0,
+                        fechaNacimiento = birthdayInput,
+                        contacto = ApplicationRequest.ContactoPostulante(
+                            correo = emailInput,
+                            celular = phoneInput.toIntOrNull() ?: 0
+                        ),
+                        centroEstudios = ApplicationRequest.CentroEstudios(
+                            nombre = schoolNameInput,
+                            tipo = schoolTypeInput,
+                            nivel = schoolLevelInput,
+                            departamento = schoolDepartmentInput,
+                            provincia = schoolProvinceInput,
+                            distrito = schoolDistrictInput
                         )
+                    )
 
-                        // Crear el objeto Application completo
-                        val application = ApplicationRequest(
-                            id = 0, // El backend probablemente asignará un ID
-                            idApoderado = userId.toInt(), // Usar el ID del usuario logeado
-                            status = "PENDIENTE", // Estado inicial
-                            scholarshipName = scholarshipTypeInput,
-                            postulante = postulante
-                        )
+                    val application = ApplicationRequest(
+                        id = 0,
+                        idApoderado = userId.toInt(),
+                        status = "PENDIENTE",
+                        scholarshipName = scholarshipTypeInput,
+                        postulante = postulante
+                    )
 
-                        viewModel.viewModelScope.launch(Dispatchers.IO) {
-                            // Llamar al ViewModel para crear la aplicación
-                            viewModel.createApplication(application, userId)
+                    viewModel.viewModelScope.launch(Dispatchers.IO) {
+                        viewModel.createApplication(application, userId) { createdApplicationId ->
+                            // Navegar a pantalla de subir documentos tras crear aplicación
+                            navController.navigate("uploadDocuments/$createdApplicationId")
                         }
+                    }
 
-
-
-                        // Navegar de regreso
-                        navController.popBackStack()
-                        navController.popBackStack()
-                    },
-                    modifier = Modifier
-                        .padding(vertical = 20.dp)
-                        .padding(horizontal = 100.dp)
-                        .fillMaxWidth()
-                ) {
-                    Text("Finalizar y Enviar")
-                }
-
-            if (viewModel.createApplicationSuccess) {
-                Text(
-                    "Aplicación creada con éxito",
-                    color = Color.Green,
-                    modifier = Modifier.padding(16.dp)
-                )
+                    // No hacer popBackStack aquí porque la navegación está dentro del callback
+                },
+                modifier = Modifier
+                    .padding(vertical = 20.dp)
+                    .padding(horizontal = 100.dp)
+                    .fillMaxWidth()
+            ) {
+                Text("Finalizar y Enviar")
             }
         }
     }
