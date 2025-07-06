@@ -1,5 +1,6 @@
 package com.example.aventurape_androidmobile.domains.applications.viewModels
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -7,10 +8,16 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.aventurape_androidmobile.domains.applications.models.Application
+import com.example.aventurape_androidmobile.domains.applications.models.ApplicationRequest
 import com.example.aventurape_androidmobile.domains.applications.models.DataApoderado
 import com.example.aventurape_androidmobile.domains.applications.states.HomeApplicationsState
 import com.example.aventurape_androidmobile.utils.RetrofitClient
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 class HomeApplicationsViewModel : ViewModel(){
@@ -65,15 +72,18 @@ class HomeApplicationsViewModel : ViewModel(){
     }
 
     // Función para crear una nueva aplicación
-    fun createApplication(application: Application, apoderadoId: Long) {
+    fun createApplication(application: ApplicationRequest, apoderadoId: Long) {
         viewModelScope.launch {
             state = state.copy(isLoading = true)
             try {
                 val response = RetrofitClient.placeholder.createApplication(application, apoderadoId)
                 if (response.isSuccessful) {
                     createApplicationSuccess = true
-                    state = state.copy(isLoading = false)
+
+                    state = state.copy(isLoading = false,
+                        applicationResponse = response.body())
                     getApplicationsByApoderadoId(application.idApoderado.toLong())
+
                 } else {
                     state = state.copy(
                         errorMessage = "Error ${response.code()}: Failed to create application",
@@ -89,7 +99,7 @@ class HomeApplicationsViewModel : ViewModel(){
         }
     }
 
-    fun updateApplication(application: Application, id: Long) {
+    fun updateApplication(application: ApplicationRequest, id: Long) {
         viewModelScope.launch {
             state = state.copy(isLoading = true)
             try {
@@ -190,4 +200,41 @@ class HomeApplicationsViewModel : ViewModel(){
             }
         }
     }
+
+    //SUBIR ARCHIVOS
+    fun uploadApplicationFiles(
+        applicationId: Long,
+        postulanteDni: MultipartBody.Part,
+        postulanteLibretaNotas: MultipartBody.Part,
+        postulanteConstLogroAprendizaje: MultipartBody.Part,
+        apoderadoDni: MultipartBody.Part,
+        apoderadoDeclaracionJurada: MultipartBody.Part,
+        onResult: (Boolean, String?) -> Unit
+    ) {
+        Log.d("AddPostulanteFormScreen", "View model cargar archivos correcto")
+        val call = RetrofitClient.placeholder.uploadApplicationFiles(
+            applicationId,
+            postulanteDni,
+            postulanteLibretaNotas,
+            postulanteConstLogroAprendizaje,
+            apoderadoDni,
+            apoderadoDeclaracionJurada
+        )
+
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    Log.d("AddPostulanteFormScreen", "View model cargar archivos correcto")
+                    onResult(true, null)
+                } else {
+                    onResult(false, "Error al subir archivos")
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                onResult(false, t.localizedMessage)
+            }
+        })
+    }
+
 }

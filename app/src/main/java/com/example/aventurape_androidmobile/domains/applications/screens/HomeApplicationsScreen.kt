@@ -44,6 +44,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.aventurape_androidmobile.domains.adventurer.screens.AdventureCard
 import com.example.aventurape_androidmobile.domains.applications.models.Application
+import com.example.aventurape_androidmobile.domains.applications.models.ApplicationRequest
 import com.example.aventurape_androidmobile.domains.applications.viewModels.HomeApplicationsViewModel
 import com.example.aventurape_androidmobile.shared.components.Drawer
 import com.example.aventurape_androidmobile.shared.components.TopBar
@@ -87,7 +88,29 @@ fun HomeApplicationsScreen(viewModel: HomeApplicationsViewModel, navController: 
                     }
                 }
             })
-        }){ paddingValues ->
+        } ,floatingActionButton = {
+            Box(
+                Modifier.fillMaxWidth().
+                padding(start = 40.dp)
+            ) {
+                FloatingActionButton(
+                    onClick = { navController.navigate("select_postulacion_screen") },
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .size(72.dp)
+                        .clip(RoundedCornerShape(100.dp)),
+                    containerColor = Color(0xFF2A3D66),
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Agregar",
+                        modifier = Modifier.size(36.dp),
+                        tint = Color.White
+                    )
+                }
+            }
+        }
+    ){ paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -109,29 +132,8 @@ fun HomeApplicationsScreen(viewModel: HomeApplicationsViewModel, navController: 
                 items(viewModel.state.applications) { application ->
                     ApplicationCard(viewModel, application, navController, userId)
                 }
-            }
-
-            //boton +
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                FloatingActionButton(
-                    onClick = { navController.navigate("select_postulacion_screen") },
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter) // Alineación aplicada al contenedor
-                        .padding(16.dp)
-                        .size(72.dp) // Tamaño grande
-                        .clip(RoundedCornerShape(100.dp)),
-                    containerColor = Color(0xFF2A3D66)
-
-                ) {
-                    androidx.compose.material3.Icon(
-                        imageVector = androidx.compose.material.icons.Icons.Default.Add,
-                        contentDescription = "Agregar",
-                        modifier = Modifier.size(36.dp), // Tamaño del ícono
-                        tint = androidx.compose.ui.graphics.Color.White
-                    )
+                item {
+                    androidx.compose.foundation.layout.Spacer(modifier = Modifier.size(32.dp))
                 }
             }
 

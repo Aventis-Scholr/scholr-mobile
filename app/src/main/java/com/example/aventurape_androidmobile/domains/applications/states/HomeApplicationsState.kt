@@ -6,6 +6,8 @@ import com.example.aventurape_androidmobile.domains.applications.models.DataApod
 data class HomeApplicationsState (
     val applications: List<Application> = emptyList(),
     //val entrepreneurs: List<ProfileE> = emptyList(), // Nueva lista de emprendedores
+    val applicationResponse: Application? = null,
+
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
 
