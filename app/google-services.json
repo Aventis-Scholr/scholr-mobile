@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "572690334495",
+    "project_id": "scholr-43c71",
+    "storage_bucket": "scholr-43c71.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:572690334495:android:c8aaf73b2d500d94ebe62a",
+        "android_client_info": {
+          "package_name": "com.example.aventurape_androidmobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMU-dxgXNSnBY9EP2sf0EX-LJcp9NtemI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
