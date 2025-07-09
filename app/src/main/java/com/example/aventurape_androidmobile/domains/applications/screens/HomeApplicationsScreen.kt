@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.isPopupLayout
 import androidx.lifecycle.viewModelScope
@@ -148,55 +149,61 @@ fun ApplicationCard(viewModel: HomeApplicationsViewModel, application: Applicati
             .fillMaxSize()
             .padding(16.dp)
             .clip(RoundedCornerShape(8.dp))
-            .background(androidx.compose.ui.graphics.Color(0xFFF4C542))
+            .background(Color(0xFFF4C542))
     ) {
-        Column (modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = application.postulante.nombres + " " + application.postulante.apellidos,
                 modifier = Modifier.padding(bottom = 10.dp),
                 fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
             )
             Text(
-                text = "Estado: " + application.status,
+                text = "Estado: ${application.status}",
                 modifier = Modifier.padding(bottom = 10.dp),
                 fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
             )
+
+            // Mostrar el reporte solo si está RECHAZADO
+            if (application.status.uppercase() == "RECHAZADO" && !application.reporte.isNullOrBlank()) {
+                Text(
+                    text = "Motivo del rechazo: ${application.reporte}",
+                    modifier = Modifier.padding(top = 8.dp),
+                    color = Color.Red,
+                    fontWeight = FontWeight.Normal
+                )
+            }
         }
+
         Column(
             horizontalAlignment = Alignment.End,
             modifier = Modifier.fillMaxWidth()
         ) {
             Row {
-                if (application.status == "SINENVIAR")
-                {
-                    IconButton(
-                        onClick = {
-                            viewModel.viewModelScope.launch(Dispatchers.IO) {
-                                viewModel.applicationToEdit = application;
-                            }
-                            navController.navigate("edit_postulante_form_screen")
+                if (application.status == "SINENVIAR") {
+                    IconButton(onClick = {
+                        viewModel.viewModelScope.launch(Dispatchers.IO) {
+                            viewModel.applicationToEdit = application
                         }
-                    ) {
+                        navController.navigate("edit_postulante_form_screen")
+                    }) {
                         Icon(
                             imageVector = Icons.Default.Edit,
                             contentDescription = ""
-                        ) }
+                        )
+                    }
                 }
 
-                IconButton(
-                    onClick = {
-                        viewModel.viewModelScope.launch(Dispatchers.IO) {
-                            viewModel.deleteApplication(application.id.toLong(), userId)
-                        }
+                IconButton(onClick = {
+                    viewModel.viewModelScope.launch(Dispatchers.IO) {
+                        viewModel.deleteApplication(application.id.toLong(), userId)
                     }
-                ) {
+                }) {
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = ""
-                    ) }
+                    )
+                }
             }
-
-
         }
     }
 }

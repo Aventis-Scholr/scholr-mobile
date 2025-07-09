@@ -53,10 +53,22 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.InputStream
 import java.util.Date
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.LaunchedEffect
+import com.example.aventurape_androidmobile.domains.management.screens.viewModels.HomeScholarshipsViewModel
+
+@OptIn(ExperimentalMaterial3Api::class)
 
 @Composable
-fun EditPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController: NavHostController, context: Context)
+fun EditPostulanteFormScreen(viewModel: HomeApplicationsViewModel,scholarshipsViewModel: HomeScholarshipsViewModel, navController: NavHostController, context: Context)
 {
+    LaunchedEffect(Unit) {
+        scholarshipsViewModel.loadScholarshipsByCompany("BACKUS")
+    }
     //para el drawer
     val drawerState= rememberDrawerState(
         initialValue = DrawerValue.Closed
@@ -175,24 +187,46 @@ fun EditPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController
             )
 
             // Sección de tipo de beca
-            Text("Nombre de Beca",
-                modifier = Modifier
-                    .padding(horizontal = 20.dp)
-                    .padding(top = 20.dp, bottom = 10.dp),
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
-                color = Color.Blue
-            )
+            var expanded by remember { mutableStateOf(false) }
+            val scholarships = scholarshipsViewModel.state.scholarships
 
-            OutlinedTextField(
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = !expanded },
                 modifier = Modifier
-                    .padding(vertical = 10.dp)
                     .padding(horizontal = 60.dp)
-                    .background(Color.White),
-                value = scholarshipTypeInput,
-                onValueChange = { scholarshipTypeInput = it },
-                placeholder = { Text("MERITO, DEPORTIVA, ECONOMICA, CULTURAL") }
-            )
+                    .padding(vertical = 10.dp)
+            ) {
+                OutlinedTextField(
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth()
+                        .background(Color.White),
+                    readOnly = true,
+                    value = scholarshipTypeInput,
+                    onValueChange = {},
+                    label = { Text("Seleccione una beca") },
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                    },
+                    colors = ExposedDropdownMenuDefaults.textFieldColors()
+                )
+
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    scholarships.forEach { scholarship ->
+                        DropdownMenuItem(
+                            text = { Text(scholarship.name) },
+                            onClick = {
+                                scholarshipTypeInput = scholarship.name
+                                expanded = false
+                            }
+                        )
+                    }
+                }
+            }
 
             // Sección de información personal
             Text("Información Personal",

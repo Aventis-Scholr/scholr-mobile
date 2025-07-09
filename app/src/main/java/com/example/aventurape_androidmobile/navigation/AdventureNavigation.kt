@@ -112,7 +112,7 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
         }
 
         composable(NavScreenAdventurer.edit_postulante_form_screen.name) {
-            EditPostulanteFormScreen(viewModel = homeApplicationsViewModel, navController = navController, context)
+            EditPostulanteFormScreen(viewModel = homeApplicationsViewModel,scholarshipsViewModel = scholarshipsViewModel, navController = navController, context)
         }
 
 

@@ -21,6 +21,8 @@ import retrofit2.Response
 
 
 class HomeApplicationsViewModel : ViewModel(){
+
+
     var state by mutableStateOf(HomeApplicationsState())
         private set
 
@@ -34,6 +36,8 @@ class HomeApplicationsViewModel : ViewModel(){
         private  set
 
     lateinit var applicationToEdit: Application
+
+
     //-------------------------------------------------
 
     fun loadApplications() {
@@ -59,8 +63,15 @@ class HomeApplicationsViewModel : ViewModel(){
             state = state.copy(isLoading = true)
             try {
                 val response = RetrofitClient.placeholder.getApplicationsByApoderadoId(apoderadoId)
+
+
                 if (response.isSuccessful) {
                     val applications = response.body() ?: emptyList()
+
+                    applications.forEach {
+                        Log.d("APP_CHECK", "Status: ${it.status}, Reporte: ${it.reporte}")
+                    }
+
                     state = state.copy(applications = applications, isLoading = false)
                 } else {
                     state = state.copy(errorMessage = "Failed to load applications", isLoading = false)

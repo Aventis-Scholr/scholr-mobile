@@ -10,7 +10,8 @@ public class Application (
     val postulante_libreta_notas: String,
     val postulante_const_logro_aprendizaje: String,
     val apoderado_dni: String,
-    val apoderado_declaracion_jurada: String
+    val apoderado_declaracion_jurada: String,
+    val reporte: String?
 ) {
     data class Postulante(
         val nombres: String,
