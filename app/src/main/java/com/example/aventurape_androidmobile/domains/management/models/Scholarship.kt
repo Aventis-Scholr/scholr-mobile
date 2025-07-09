@@ -1,6 +1,6 @@
 package com.example.aventurape_androidmobile.domains.management.models
 
-public class Scholarship(
+data class Scholarship(
     val id: Int,
     val name: String,
     val companyName: String,

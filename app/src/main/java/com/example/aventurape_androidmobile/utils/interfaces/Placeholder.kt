@@ -119,12 +119,6 @@ interface Placeholder {
     @GET("scholarships")
     suspend fun getAllScholarships(): Response<List<Scholarship>>
 
-    //get scholarship by companyName
-    @GET("scholarships/{companyName}")
-    suspend fun getScholarshipsByCompanyName(
-        @Path("companyName") companyName: String
-    ): Response<List<Scholarship>>
-
     //---------------------------------
     @GET("publication/{publicationId}/comments")
     suspend fun getComments(
@@ -207,4 +201,8 @@ interface Placeholder {
         @Path("entrepreneurId") entrepreneurId: Long
     ): Response<List<PublicationByOrderResponse>>
 
+    @GET("scholarships/company/{companyName}")
+    suspend fun getScholarshipsByCompany(
+        @Path("companyName") companyName: String
+    ): Response<List<Scholarship>>
 }

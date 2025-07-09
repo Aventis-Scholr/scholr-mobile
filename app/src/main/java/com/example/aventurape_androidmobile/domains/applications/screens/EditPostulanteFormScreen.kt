@@ -175,7 +175,7 @@ fun EditPostulanteFormScreen(viewModel: HomeApplicationsViewModel, navController
             )
 
             // Sección de tipo de beca
-            Text("Tipo de Beca",
+            Text("Nombre de Beca",
                 modifier = Modifier
                     .padding(horizontal = 20.dp)
                     .padding(top = 20.dp, bottom = 10.dp),

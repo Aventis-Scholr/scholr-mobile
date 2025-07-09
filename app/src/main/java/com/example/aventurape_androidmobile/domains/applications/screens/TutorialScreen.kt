@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalDrawerSheet
@@ -51,6 +53,7 @@ fun TutorialScreen(viewModel: HomeApplicationsViewModel, navController: NavHostC
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
                     .padding(paddingValues)
                     .padding(horizontal = 24.dp, vertical = 16.dp)
             ) {
@@ -60,7 +63,7 @@ fun TutorialScreen(viewModel: HomeApplicationsViewModel, navController: NavHostC
                     fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
-                YouTubeIframe(videoId = "dQw4w9WgXcQ")
+                YouTubeIframe(videoId = "WIYoh4uc9uc")
 
                 Spacer(modifier = Modifier.height(32.dp))
 

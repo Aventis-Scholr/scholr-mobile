@@ -49,6 +49,7 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
     val profileViewModelE: ProfileViewModelE = viewModel()
     val homeAdventurerViewModel: HomeAdventurerViewModel = viewModel()
 
+    val scholarshipsViewModel: HomeScholarshipsViewModel = viewModel ()
     val homeApplicationsViewModel: HomeApplicationsViewModel = viewModel()
 
     var userRole = PreferenceManager.getUserRoles(context);
@@ -107,7 +108,7 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
 
 
         composable(NavScreenAdventurer.add_postulante_form_screen.name) {
-            AddPostulanteFormScreen(viewModel = homeApplicationsViewModel, navController = navController, context)
+            AddPostulanteFormScreen(viewModel = homeApplicationsViewModel, scholarshipsViewModel = scholarshipsViewModel ,navController = navController, context)
         }
 
         composable(NavScreenAdventurer.edit_postulante_form_screen.name) {
