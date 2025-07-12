@@ -26,7 +26,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,7 +44,6 @@ import androidx.navigation.NavHostController
 import com.example.aventurape_androidmobile.domains.applications.models.Application
 import com.example.aventurape_androidmobile.domains.applications.models.ApplicationRequest
 import com.example.aventurape_androidmobile.domains.applications.viewModels.HomeApplicationsViewModel
-import com.example.aventurape_androidmobile.domains.management.screens.viewModels.HomeScholarshipsViewModel
 import com.example.aventurape_androidmobile.shared.components.Drawer
 import com.example.aventurape_androidmobile.shared.components.TopBar
 import kotlinx.coroutines.Dispatchers
@@ -55,17 +53,18 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.InputStream
 import java.util.Date
-import kotlin.text.toLong
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-
+import androidx.compose.runtime.LaunchedEffect
+import com.example.aventurape_androidmobile.domains.management.screens.viewModels.HomeScholarshipsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
-fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel,scholarshipsViewModel: HomeScholarshipsViewModel, navController: NavHostController, context: Context)
+fun EditPostulanteFormScreen(viewModel: HomeApplicationsViewModel,scholarshipsViewModel: HomeScholarshipsViewModel, navController: NavHostController, context: Context)
 {
     LaunchedEffect(Unit) {
         scholarshipsViewModel.loadScholarshipsByCompany("BACKUS")
@@ -77,24 +76,25 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel,scholarshipsVie
     val scope= rememberCoroutineScope()
 
     // Datos del postulante
-    var nameInput by remember { mutableStateOf("") }
-    var lastNamesInput by remember { mutableStateOf("") }
-    var dniInput by remember { mutableStateOf("") }
-    var birthdayInput by remember { mutableStateOf("") }
+    var nameInput by remember { mutableStateOf(viewModel.applicationToEdit.postulante.nombres) }
+    var lastNamesInput by remember { mutableStateOf(viewModel.applicationToEdit.postulante.apellidos) }
+    var dniInput by remember { mutableStateOf(viewModel.applicationToEdit.postulante.dni.toString()) }
+    var birthdayInput by remember { mutableStateOf(viewModel.applicationToEdit.postulante.fechaNacimiento) }
 
     // Contacto del postulante
-    var emailInput by remember { mutableStateOf("") }
-    var phoneInput by remember { mutableStateOf("") }
+    var emailInput by remember { mutableStateOf(viewModel.applicationToEdit.postulante.contacto.correo) }
+    var phoneInput by remember { mutableStateOf(viewModel.applicationToEdit.postulante.contacto.celular.toString()) }
 
     // Centro de estudios
-    var schoolNameInput by remember { mutableStateOf("") }
-    var schoolTypeInput by remember { mutableStateOf("") }
-    var schoolLevelInput by remember { mutableStateOf("") }
-    var schoolDepartmentInput by remember { mutableStateOf("") }
-    var schoolProvinceInput by remember { mutableStateOf("") }
-    var schoolDistrictInput by remember { mutableStateOf("") }
+    var schoolNameInput by remember { mutableStateOf(viewModel.applicationToEdit.postulante.centroEstudios.nombre) }
+    var schoolTypeInput by remember { mutableStateOf(viewModel.applicationToEdit.postulante.centroEstudios.tipo) }
+    var schoolLevelInput by remember { mutableStateOf(viewModel.applicationToEdit.postulante.centroEstudios.nivel) }
+    var schoolDepartmentInput by remember { mutableStateOf(viewModel.applicationToEdit.postulante.centroEstudios.departamento) }
+    var schoolProvinceInput by remember { mutableStateOf(viewModel.applicationToEdit.postulante.centroEstudios.provincia) }
+    var schoolDistrictInput by remember { mutableStateOf(viewModel.applicationToEdit.postulante.centroEstudios.distrito) }
 
     // Tipo de beca
+    //var scholarshipTypeInput by remember { mutableStateOf(viewModel.applicationToEdit.scholarshipName) }
     var scholarshipTypeInput by remember { mutableStateOf("") }
 
     // Obtener el ID del usuario logeado
@@ -146,46 +146,6 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel,scholarshipsVie
         return MultipartBody.Part.createFormData(partName, "file", requestBody)
     }
 
-    LaunchedEffect(viewModel.state.applicationResponse) {
-        viewModel.state.applicationResponse?.let {
-            Log.d("AddPostulanteFormScreen", "Application creada con id: ${it.id}")
-
-            val partDni = uriToMultipartBodyPart(context, postulante_dni, "postulante_dni")
-            val partLibreta = uriToMultipartBodyPart(context, postulante_libreta_notas, "postulante_libreta_notas")
-            val partConstancia = uriToMultipartBodyPart(context, postulante_const_logro_aprendizaje, "postulante_const_logro_aprendizaje")
-            val partApoderadoDni = uriToMultipartBodyPart(context, apoderado_dni, "apoderado_dni")
-            val partDeclaracion = uriToMultipartBodyPart(context, apoderado_declaracion_jurada, "apoderado_declaracion_jurada")
-
-
-            if (partDni != null && partLibreta != null && partConstancia != null && partApoderadoDni != null && partDeclaracion != null) {
-                viewModel.viewModelScope.launch(Dispatchers.IO) {
-                    viewModel.uploadApplicationFiles(
-                        it.id.toLong(),
-                        partDni,
-                        partLibreta,
-                        partConstancia,
-                        partApoderadoDni,
-                        partDeclaracion
-                    ) { success, errorMessage ->
-                        if (success) {
-                            Log.d("AddPostulanteFormScreen", "Archivos subidos correctamente")
-                            navController.popBackStack()
-                            navController.popBackStack()
-                        } else {
-                            Log.e("AddPostulanteFormScreen", "Error al subir archivos: $errorMessage")
-                            // Aquí puedes mostrar el error al usuario
-                        }
-                    }
-                }
-            } else {
-                Log.e("AddPostulanteFormScreen", "Faltan archivos por adjuntar")
-                // Aquí puedes mostrar un mensaje al usuario si lo deseas
-            }
-        }
-    }
-
-    //----------------------------------
-
     ModalNavigationDrawer(
         drawerState=drawerState,
         drawerContent = {
@@ -218,7 +178,7 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel,scholarshipsVie
                 .background(Color(220,241,249))
                 .verticalScroll(rememberScrollState())  // Para hacer scroll si el contenido es largo
         ) {
-            Text("Añadir Postulante",
+            Text("Editar Postulante",
                 modifier = Modifier
                     .padding(horizontal = 20.dp)
                     .padding(vertical = 25.dp),
@@ -227,15 +187,6 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel,scholarshipsVie
             )
 
             // Sección de tipo de beca
-            Text("Tipo de Beca",
-                modifier = Modifier
-                    .padding(horizontal = 20.dp)
-                    .padding(top = 20.dp, bottom = 10.dp),
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
-                color = Color.Blue
-            )
-
             var expanded by remember { mutableStateOf(false) }
             val scholarships = scholarshipsViewModel.state.scholarships
 
@@ -522,7 +473,7 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel,scholarshipsVie
                 fontSize = 16.sp
             )
 
-            // Botón para seleccionar archivo
+            //seleccionar archivos
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -660,11 +611,9 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel,scholarshipsVie
                 }
             }
 
-            //--------------------------------
-
-                // Botón para guardar
-                Button(
-                    onClick = {
+            // Botón para guardar
+            Button(
+                onClick = {
                         // Crear el objeto Postulante
                         val postulante = ApplicationRequest.Postulante(
                             nombres = nameInput,
@@ -690,31 +639,59 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel,scholarshipsVie
                             id = 0, // El backend probablemente asignará un ID
                             idApoderado = userId.toInt(), // Usar el ID del usuario logeado
                             status = "SINENVIAR", // Estado inicial
+                            //tipoBeca = scholarshipTypeInput,
                             scholarshipName = scholarshipTypeInput,
                             postulante = postulante
                         )
 
                         viewModel.viewModelScope.launch(Dispatchers.IO) {
                             // Llamar al ViewModel para crear la aplicación
-                            viewModel.createApplication(application, userId)
+                            println(application.postulante.nombres);
+                            viewModel.updateApplication(application, viewModel.applicationToEdit.id.toLong())
+
+                            val partDni = uriToMultipartBodyPart(context, postulante_dni, "postulante_dni")
+                            val partLibreta = uriToMultipartBodyPart(context, postulante_libreta_notas, "postulante_libreta_notas")
+                            val partConstancia = uriToMultipartBodyPart(context, postulante_const_logro_aprendizaje, "postulante_const_logro_aprendizaje")
+                            val partApoderadoDni = uriToMultipartBodyPart(context, apoderado_dni, "apoderado_dni")
+                            val partDeclaracion = uriToMultipartBodyPart(context, apoderado_declaracion_jurada, "apoderado_declaracion_jurada")
+
+
+                            if (partDni != null && partLibreta != null && partConstancia != null && partApoderadoDni != null && partDeclaracion != null) {
+                                viewModel.viewModelScope.launch(Dispatchers.IO) {
+                                    viewModel.uploadApplicationFiles(
+                                        viewModel.applicationToEdit.id.toLong(),
+                                        partDni,
+                                        partLibreta,
+                                        partConstancia,
+                                        partApoderadoDni,
+                                        partDeclaracion
+                                    ) { success, errorMessage ->
+                                        if (success) {
+                                            Log.d("AddPostulanteFormScreen", "Archivos subidos correctamente")
+                                        } else {
+                                            Log.e("AddPostulanteFormScreen", "Error al subir archivos: $errorMessage")
+                                            // Aquí puedes mostrar el error al usuario
+                                        }
+                                    }
+                                }
+                            } else {
+                                Log.e("AddPostulanteFormScreen", "Faltan archivos por adjuntar")
+                                // Aquí puedes mostrar un mensaje al usuario si lo deseas
+                            }
                         }
 
-
-
                         // Navegar de regreso
-                        //navController.popBackStack()
-                        //navController.popBackStack()
+                        navController.popBackStack()
                     },
-                    modifier = Modifier
+                modifier = Modifier
                         .padding(vertical = 20.dp)
                         .padding(horizontal = 100.dp)
                         .fillMaxWidth()
-                ) {
-                    Text("Guardar Y Cerrar")
-                }
-
-                Button(
-                    onClick = {
+            ) {
+                Text("Guardar Y Cerrar")
+            }
+            Button(
+                onClick = {
                         // Crear el objeto Postulante
                         val postulante = ApplicationRequest.Postulante(
                             nombres = nameInput,
@@ -740,26 +717,58 @@ fun AddPostulanteFormScreen(viewModel: HomeApplicationsViewModel,scholarshipsVie
                             id = 0, // El backend probablemente asignará un ID
                             idApoderado = userId.toInt(), // Usar el ID del usuario logeado
                             status = "PENDIENTE", // Estado inicial
+                            //tipoBeca = scholarshipTypeInput,
                             scholarshipName = scholarshipTypeInput,
                             postulante = postulante
                         )
 
                         viewModel.viewModelScope.launch(Dispatchers.IO) {
                             // Llamar al ViewModel para crear la aplicación
-                            viewModel.createApplication(application, userId)
+                            viewModel.updateApplication(application, viewModel.applicationToEdit.id.toLong())
+
+                            val partDni = uriToMultipartBodyPart(context, postulante_dni, "postulante_dni")
+                            val partLibreta = uriToMultipartBodyPart(context, postulante_libreta_notas, "postulante_libreta_notas")
+                            val partConstancia = uriToMultipartBodyPart(context, postulante_const_logro_aprendizaje, "postulante_const_logro_aprendizaje")
+                            val partApoderadoDni = uriToMultipartBodyPart(context, apoderado_dni, "apoderado_dni")
+                            val partDeclaracion = uriToMultipartBodyPart(context, apoderado_declaracion_jurada, "apoderado_declaracion_jurada")
+
+
+                            if (partDni != null && partLibreta != null && partConstancia != null && partApoderadoDni != null && partDeclaracion != null) {
+                                viewModel.viewModelScope.launch(Dispatchers.IO) {
+                                    viewModel.uploadApplicationFiles(
+                                        viewModel.applicationToEdit.id.toLong(),
+                                        partDni,
+                                        partLibreta,
+                                        partConstancia,
+                                        partApoderadoDni,
+                                        partDeclaracion
+                                    ) { success, errorMessage ->
+                                        if (success) {
+                                            Log.d("AddPostulanteFormScreen", "Archivos subidos correctamente")
+                                        } else {
+                                            Log.e("AddPostulanteFormScreen", "Error al subir archivos: $errorMessage")
+                                            // Aquí puedes mostrar el error al usuario
+                                        }
+                                    }
+                                }
+                            } else {
+                                Log.e("AddPostulanteFormScreen", "Faltan archivos por adjuntar")
+                                // Aquí puedes mostrar un mensaje al usuario si lo deseas
+                            }
                         }
 
+
+
                         // Navegar de regreso
-                        //navController.popBackStack()
-                        //navController.popBackStack()
+                        navController.popBackStack()
                     },
-                    modifier = Modifier
+                modifier = Modifier
                         .padding(vertical = 20.dp)
                         .padding(horizontal = 100.dp)
                         .fillMaxWidth()
-                ) {
-                    Text("Finalizar y Enviar")
-                }
+            ) {
+                Text("Finalizar y Enviar")
+            }
 
             if (viewModel.createApplicationSuccess) {
                 Text(

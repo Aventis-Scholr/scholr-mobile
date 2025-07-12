@@ -29,4 +29,22 @@ class HomeScholarshipsViewModel : ViewModel() {
             }
         }
     }
+
+    fun loadScholarshipsByCompany(companyName: String) {
+        viewModelScope.launch {
+            state = state.copy(isLoading = true)
+            try {
+                val response = RetrofitClient.placeholder.getScholarshipsByCompany(companyName)
+                if (response.isSuccessful) {
+                    val scholarships = response.body() ?: emptyList()
+                    state = state.copy(scholarships = scholarships, isLoading = false)
+                } else {
+                    state = state.copy(errorMessage = "No se pudieron cargar las becas", isLoading = false)
+                }
+            } catch (e: Exception) {
+                state = state.copy(errorMessage = e.localizedMessage, isLoading = false)
+            }
+        }
+    }
+
 }

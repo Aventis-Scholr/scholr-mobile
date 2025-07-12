@@ -6,6 +6,7 @@ import com.example.aventurape_androidmobile.utils.models.PublicationResponse
 import com.example.aventurape_androidmobile.domains.adventurer.models.Comment
 import com.example.aventurape_androidmobile.domains.adventurer.models.Review
 import com.example.aventurape_androidmobile.domains.applications.models.Application
+import com.example.aventurape_androidmobile.domains.applications.models.ApplicationRequest
 import com.example.aventurape_androidmobile.domains.applications.models.DataApoderado
 import com.example.aventurape_androidmobile.domains.entrepreneur_publication.models.ProfileE
 import com.example.aventurape_androidmobile.domains.management.models.Scholarship
@@ -20,13 +21,17 @@ import com.example.aventurape_androidmobile.utils.models.UserResponse
 import com.example.aventurape_androidmobile.utils.models.UserResponseProfileA
 import com.example.aventurape_androidmobile.utils.models.UserResponseProfileE
 import com.example.aventurape_androidmobile.utils.models.UserRolesResponse
+import okhttp3.MultipartBody
+import okhttp3.ResponseBody
+import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
-import retrofit2.http.Header
+import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Part
 import retrofit2.http.Path
 
 interface Placeholder {
@@ -48,9 +53,42 @@ interface Placeholder {
     //--------------
     //APPLICATIONS
 
+    @Multipart
+    @POST("applications/{applicationId}/files")
+    fun uploadApplicationFiles(
+        @Path("applicationId") applicationId: Long,
+
+        @Part postulante_dni: MultipartBody.Part,
+        @Part postulante_libreta_notas: MultipartBody.Part,
+        @Part postulante_const_logro_aprendizaje: MultipartBody.Part,
+
+        @Part apoderado_dni: MultipartBody.Part,
+        @Part apoderado_declaracion_jurada: MultipartBody.Part
+    ): Call<ResponseBody>
+
     //get all applications
     @GET("applications")
     suspend fun getAllApplications(): Response<List<Application>>
+
+    @GET("applications/apoderado/{apoderadoId}")
+    suspend fun getApplicationsByApoderadoId(
+        @Path("apoderadoId") apoderadoId: Long
+    ): Response<List<Application>>
+
+    @POST("applications/apoderado/{apoderadoId}")
+    suspend fun createApplication(
+        @Body application: ApplicationRequest, @Path("apoderadoId") apoderadoId: Long
+    ): Response<Application>
+
+    @PUT("applications/{id}")
+    suspend fun updateApplication(
+        @Body application: ApplicationRequest, @Path("id") id: Long
+    ): Response<Void>
+
+    @DELETE("applications/{id}")
+    suspend fun deleteApplication(
+        @Path("id") id: Long
+    ): Response<Void>
 
     //get data apdoerado por id de apoderado y id de data
     @GET("data-apoderado/{apoderadoId}/{id}")
@@ -66,20 +104,20 @@ interface Placeholder {
         @Body dataApoderado: DataApoderado
     ): Response<Void>
 
+    @PUT("data-apoderado/put/apoderado/{apoderadoId}")
+    suspend fun updateDataApoderado(
+        @Path("apoderadoId") apoderadoId: Long,
+        @Body dataApoderado: DataApoderado
+    ): Response<Application>
+
     //get data apoderado by apoderado id
-    @GET("data-apoderado/{apoderadoId}")
+    @GET("data-apoderado/apoderado/{apoderadoId}")
     suspend fun getDataApoderadoByApoderadoId(
         @Path("apoderadoId") apoderadoId: Long
     ): Response<DataApoderado>
     //--------------- SCHOLARSHIPS ------------------
     @GET("scholarships")
     suspend fun getAllScholarships(): Response<List<Scholarship>>
-
-    //get scholarship by companyName
-    @GET("scholarships/{companyName}")
-    suspend fun getScholarshipsByCompanyName(
-        @Path("companyName") companyName: String
-    ): Response<List<Scholarship>>
 
     //---------------------------------
     @GET("publication/{publicationId}/comments")
@@ -163,4 +201,8 @@ interface Placeholder {
         @Path("entrepreneurId") entrepreneurId: Long
     ): Response<List<PublicationByOrderResponse>>
 
+    @GET("scholarships/company/{companyName}")
+    suspend fun getScholarshipsByCompany(
+        @Path("companyName") companyName: String
+    ): Response<List<Scholarship>>
 }

@@ -25,6 +25,7 @@ import com.example.aventurape_androidmobile.domains.adventurer.viewModels.HomeAd
 import com.example.aventurape_androidmobile.domains.adventurer.viewModels.ProfileViewModelA
 import com.example.aventurape_androidmobile.domains.applications.screens.AddPostulanteFormScreen
 import com.example.aventurape_androidmobile.domains.applications.screens.DataApoderadoFormScreen
+import com.example.aventurape_androidmobile.domains.applications.screens.EditPostulanteFormScreen
 import com.example.aventurape_androidmobile.domains.authentication.screens.viewModels.LoginViewModel
 import com.example.aventurape_androidmobile.domains.authentication.screens.viewModels.SignUpViewModel
 import com.example.aventurape_androidmobile.domains.entrepreneur_publication.screens.AccountEntrepreneur
@@ -33,7 +34,9 @@ import com.example.aventurape_androidmobile.domains.entrepreneur_publication.vie
 import com.example.aventurape_androidmobile.shared.screens.ErrorScreen
 import com.example.aventurape_androidmobile.domains.authentication.screens.CompanySelectionScreen
 import com.example.aventurape_androidmobile.domains.applications.screens.HomeApplicationsScreen
+import com.example.aventurape_androidmobile.domains.applications.screens.InstruccionesBecaScreen
 import com.example.aventurape_androidmobile.domains.applications.screens.SelectPostulacionScreen
+import com.example.aventurape_androidmobile.domains.applications.screens.TutorialScreen
 import com.example.aventurape_androidmobile.domains.applications.viewModels.HomeApplicationsViewModel
 import com.example.aventurape_androidmobile.domains.management.screens.HomeScholarshipsScreen
 import com.example.aventurape_androidmobile.domains.management.screens.viewModels.HomeScholarshipsViewModel
@@ -46,6 +49,7 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
     val profileViewModelE: ProfileViewModelE = viewModel()
     val homeAdventurerViewModel: HomeAdventurerViewModel = viewModel()
 
+    val scholarshipsViewModel: HomeScholarshipsViewModel = viewModel ()
     val homeApplicationsViewModel: HomeApplicationsViewModel = viewModel()
 
     var userRole = PreferenceManager.getUserRoles(context);
@@ -75,16 +79,22 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
             SignUpScreen(viewModel = signUpViewModel, navController = navController)
         }
 
-        //-----------------------------
+        //-------------------------------------------
         //Apoderado screens
 
         composable(NavScreenAdventurer.bandeja_apoderado_screen.name) { //HOME
             if (userRole != null && userRole!!.contains(Roles.ROLE_APODERADO.name)) {
-                HomeApplicationsScreen(viewModel = homeApplicationsViewModel, navController = navController)
+                HomeApplicationsScreen(viewModel = homeApplicationsViewModel, navController = navController, context)
             } else {
                 // Handle unauthorized access or redirect
                 navController.navigate(NavScreenAdventurer.error_screen.name)
             }
+        }
+
+
+        composable(NavScreenAdventurer.tutorial_screen.name) { //Tutorial
+            TutorialScreen(viewModel = homeApplicationsViewModel, navController = navController)
+
         }
 
         composable(NavScreenAdventurer.select_postulacion_screen.name) { //HOME
@@ -93,14 +103,23 @@ fun AdventurerNavigation(navController: NavHostController, context: Context) {
         }
 
         composable(NavScreenAdventurer.data_apoderado_form_screen.name) { //HOME
-            DataApoderadoFormScreen(viewModel = homeApplicationsViewModel, navController = navController)
+            DataApoderadoFormScreen(viewModel = homeApplicationsViewModel, navController = navController, context)
         }
+
 
         composable(NavScreenAdventurer.add_postulante_form_screen.name) {
-            AddPostulanteFormScreen(viewModel = homeApplicationsViewModel, navController = navController)
+            AddPostulanteFormScreen(viewModel = homeApplicationsViewModel, scholarshipsViewModel = scholarshipsViewModel ,navController = navController, context)
         }
 
-        //------------------------------
+        composable(NavScreenAdventurer.edit_postulante_form_screen.name) {
+            EditPostulanteFormScreen(viewModel = homeApplicationsViewModel,scholarshipsViewModel = scholarshipsViewModel, navController = navController, context)
+        }
+
+
+        composable(NavScreenAdventurer.cartilla_instrucciones.name) {
+            InstruccionesBecaScreen(navController = navController)
+        }
+        //-----------------------------------------
 
 
         //aventurero screens
